@@ -1,15 +1,14 @@
 import * as React from "react";
-import {ReactNode, ReactNodeArray} from "react";
+import { ReactNode, ReactNodeArray } from "react";
 import { Styles } from "react-jss";
 import injectSheet from "react-jss/lib/injectSheet";
-
 
 interface Props {
   id: number;
   classes: { [s: string]: string };
-  icons: ReactNodeArray,
+  icons: ReactNodeArray;
   name: string;
-  children: ReactNode,
+  children: ReactNode;
 }
 
 const styles: Styles = {
@@ -36,9 +35,7 @@ const styles: Styles = {
 const Track: React.SFC<Props> = ({ id, classes, icons, children, name }) => {
   return (
     <div className={classes.Track}>
-      <div className={classes.subwayIcons}>
-        {icons}
-      </div>
+      <div className={classes.subwayIcons}>{icons}</div>
       <h3 className={classes.name}> {name} </h3>
       <div className={classes.description}>{children}</div>
     </div>

@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Theme } from "../../types";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
+import { JssRules, Theme } from "../../types";
+import injectSheet, { Styles } from "react-jss/lib/injectSheet";
 import { Field, Form } from "react-final-form";
 import Button from "./Button";
 import { compose } from "redux";
@@ -12,7 +11,28 @@ import { emailRegex } from "../../constants";
 import Input from "./Input";
 import { Link } from "react-router-dom";
 
-const styles = (theme: Theme): Styles => ({
+interface LoginPageStyles<T> extends Styles {
+  LoginPage: T;
+  form: T;
+  registerLink: T;
+  resetPasswordLink: T;
+}
+
+interface Props {
+  classes: LoginPageStyles<string>;
+  isSubmitting: boolean;
+  loginWithGoogle: () => any;
+  loginWithPassword: (
+    { email, password }: { email: string; password: string }
+  ) => any;
+}
+
+interface FormValues {
+  email: string;
+  password: string;
+}
+
+const styles = (theme: Theme): LoginPageStyles<JssRules> => ({
   LoginPage: {
     padding: "30px",
     display: "flex",
@@ -30,51 +50,48 @@ const styles = (theme: Theme): Styles => ({
     alignItems: "flex-end"
   },
   registerLink: {
-    padding: "20px",
+    padding: "20px 20px 0px 20px",
+    fontSize: "1.2em"
+  },
+  resetPasswordLink: {
+    padding: "5px 20px 20px 20px",
     fontSize: "1.2em"
   }
 });
 
-interface Props {
-  classes: { [s: string]: string };
-  loginWithGoogle: () => any;
-  loginWithPassword: (
-    { email, password }: { email: string; password: string }
-  ) => any;
-}
-
-interface FormValues {
-  email: string;
-  password: string;
-}
+const validateLogin = values => {
+  let errors: { email?: string; password?: string } = {};
+  if (values.email && values.email.length === 0) {
+    errors.email = "Email is required";
+  }
+  if (values.password && values.password.length === 0) {
+    errors.password = "Password is required";
+  }
+  if (values.email && !emailRegex.test(values.email)) {
+    errors.email = "Invalid email";
+  }
+  return errors;
+};
 
 const LoginPage: React.SFC<Props> = ({
   classes,
+  isSubmitting,
   loginWithGoogle,
   loginWithPassword
 }) => {
   const handleSubmit = (values: FormValues) => {
     loginWithPassword(values);
   };
-
   const handleGoogleLogin = (event: Event) => {
     event.preventDefault();
     loginWithGoogle();
   };
-
   return (
     <div className={classes.LoginPage}>
       <h1> Login </h1>
       <Form
         onSubmit={handleSubmit}
-        validate={values => {
-          let errors: { email?: string; password?: string } = {};
-          //@ts-ignore
-          if (values.email && !emailRegex.test(values.email)) {
-            errors.email = "Invalid email";
-          }
-          return errors;
-        }}
+        validate={validateLogin}
         render={({ handleSubmit, invalid }) => (
           <form className={classes.form} onSubmit={handleSubmit}>
             <Field name="email">
@@ -99,14 +116,25 @@ const LoginPage: React.SFC<Props> = ({
                 />
               )}
             </Field>
-            <Button disabled={invalid} width="100px" type="submit">
+            <Button
+              disabled={invalid || isSubmitting}
+              width="100px"
+              type="submit"
+            >
               Login
             </Button>
-            <Button width="200px" onClick={handleGoogleLogin}>
+            <Button
+              disabled={isSubmitting}
+              width="200px"
+              onClick={handleGoogleLogin}
+            >
               Login w/ Google
             </Button>
             <Link to="/register" className={classes.registerLink}>
-            Don't have an account? Register
+              Don't have an account? Register
+            </Link>
+            <Link to="/reset_password" className={classes.resetPasswordLink}>
+              Forgot your password? Reset it
             </Link>
           </form>
         )}
@@ -114,6 +142,10 @@ const LoginPage: React.SFC<Props> = ({
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+  isSubmitting: state.core.loginForm.isSubmitting
+});
 
 const mapDispatchToProps = (dispatch: any) => ({
   loginWithGoogle: () => {
@@ -124,6 +156,10 @@ const mapDispatchToProps = (dispatch: any) => ({
   }
 });
 
-export default compose(injectSheet(styles), connect(null, mapDispatchToProps))(
-  LoginPage
-);
+export default compose(
+  injectSheet(styles),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(LoginPage);

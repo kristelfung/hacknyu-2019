@@ -33,6 +33,7 @@ const styles = (theme: Theme): Styles => ({
     maxWidth: "800px"
   },
   bullet: {
+    fontSize: "1.6rem",
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",

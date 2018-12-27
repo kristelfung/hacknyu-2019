@@ -1,6 +1,6 @@
 import * as React from "react";
 import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { State, Theme } from "../../types";
+import { ReduxState, Theme } from "../../types";
 import { Link } from "react-router-dom";
 import { User } from "firebase";
 import { compose } from "redux";
@@ -40,7 +40,7 @@ const ApplyButton: React.SFC<Props> = ({ user, classes }) => {
   );
 };
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: ReduxState) => ({
   user: state.core.user
 });
 

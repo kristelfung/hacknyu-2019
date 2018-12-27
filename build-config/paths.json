@@ -20,7 +20,7 @@
         "./package.json",
         "**/build-config/paths.json"
     ],
-    "ENTRY_POINT"         : "./src/js/clientApp.js",
+    "ENTRY_POINT"         : "./src/js/clientApp.jsx",
     "ENTRY_FOLDER"        : "src/js",
     "VERSION_CONFIG_FILE" : "src/js/versionInfo.js",
     "VERSION_CONFIG_DIR"  : "src/js/"

@@ -4,3 +4,4 @@ dist/prod/**
 node_modules
 builds/**
 .idea/
+*.map

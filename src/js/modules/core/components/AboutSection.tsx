@@ -1,6 +1,6 @@
 import * as React from "react";
-import injectSheet, {Styles} from "react-jss/lib/injectSheet";
-import {Theme} from "../../types";
+import injectSheet, { Styles } from "react-jss/lib/injectSheet";
+import { Theme } from "../../types";
 
 interface Props {
   classes: { [s: string]: string };
@@ -13,7 +13,7 @@ const styles = (_theme: Theme): Styles => ({
   },
   content: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   intro: {
     fontSize: "1.8em",
@@ -47,7 +47,7 @@ const AboutSection: React.SFC<Props> = ({ classes }) => {
           made possible thanks to our wonderful sponsors and volunteers.
         </p>
         <div className={classes.imageContainer}>
-        <img className={classes.image} src="/img/tables.jpg" />
+          <img className={classes.image} src="/img/tables.jpg" />
         </div>
       </div>
     </div>

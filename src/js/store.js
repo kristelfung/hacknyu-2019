@@ -4,7 +4,7 @@ import promise from "redux-promise-middleware";
 import reducer from "./reducers";
 import logger from "redux-logger";
 import { routerMiddleware } from "connected-react-router";
-import appHistory from "tools/appHistory";
+import appHistory from "./tools/appHistory";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 const middleware =

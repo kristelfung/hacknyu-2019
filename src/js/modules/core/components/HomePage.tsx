@@ -1,19 +1,44 @@
 import * as React from "react";
 import injectSheet, { Styles } from "react-jss";
-import { State, Theme } from "../../types";
-import SubwayLine from "./SubwayLine";
+import { JssRules, Theme } from "../../types";
+import AnimatedSubwayLine from "./AnimatedSubwayLine";
 import ApplyButton from "./ApplyButton";
 import TrackInfo from "./TrackInfo";
-import Timeline from "./Timeline";
-import { connect } from "react-redux";
-import { compose } from "redux";
+import Waypoint from "react-waypoint";
 import AboutSection from "./AboutSection";
 import Section from "./Section";
 // @ts-ignore
 import { Scrollama, Step } from "react-scrollama";
 import { trackColors } from "../../ThemeInjector";
 
-const styles = (theme: Theme): Styles => ({
+interface HomePageStyles<T> extends Styles {
+  HomePage: T;
+  aboutSection: T;
+  activitiesSection: T;
+  tracksSection: T;
+  lines: T;
+  quote: T;
+  info: T;
+  timeline: T;
+  quoteAuthor: T;
+  hiddenTrip: T;
+}
+
+interface Props {
+  classes: HomePageStyles<string>;
+  viewportWidth: number;
+}
+interface State {
+  activeBlocks: number;
+}
+
+interface StepData {
+  element: HTMLElement;
+  data: number;
+  direction: string;
+}
+
+const styles = (theme: Theme): HomePageStyles<JssRules> => ({
   HomePage: {
     display: "flex",
     flexDirection: "column",
@@ -68,26 +93,12 @@ const styles = (theme: Theme): Styles => ({
     position: "relative",
     fontSize: "10px",
     color: theme.secondBackground,
-    top: "60vh"
+    top: "10vh"
   }
 });
 
-interface HomePageProps {
-  classes: { [s: string]: string };
-  viewportWidth: number;
-}
-interface HomePageState {
-  activeBlocks: number;
-}
-
-interface StepData {
-  element: HTMLElement;
-  data: number;
-  direction: string;
-}
-
-class HomePage extends React.Component<HomePageProps, HomePageState> {
-  constructor(props: HomePageProps) {
+class HomePage extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       activeBlocks: -1
@@ -106,30 +117,32 @@ class HomePage extends React.Component<HomePageProps, HomePageState> {
     }
   };
 
-  handleTopEnter = ({ element, data, direction }: StepData) => {
-    if (direction === "up") {
+  handleTopEnter = ({
+    previousPosition,
+    currentPosition
+  }: {
+    previousPosition: string;
+    currentPosition: string;
+  }) => {
+    if (currentPosition === "inside" && previousPosition === "above") {
       this.setState({ activeBlocks: -1 });
     }
   };
 
   render() {
     let { classes } = this.props;
-
+    const { activeBlocks } = this.state;
     return (
       <div className={classes.HomePage}>
         <ApplyButton />
         <div className={classes.lines}>
-          <SubwayLine delay="-2s" color={trackColors.green} />
-          <SubwayLine delay="-1.6s" color={trackColors.red} />
-          <SubwayLine delay="-1.2s" color={trackColors.blue} />
-          <SubwayLine delay="-2.4s" color={trackColors.orange} />
+          <AnimatedSubwayLine color={trackColors.green} />
+          <AnimatedSubwayLine color={trackColors.red} />
+          <AnimatedSubwayLine color={trackColors.blue} />
+          <AnimatedSubwayLine color={trackColors.orange} />
         </div>
         <div className={classes.hiddenTrip}>
-          <Scrollama onStepEnter={this.handleTopEnter}>
-            <Step data={0}>
-              <div> </div>
-            </Step>
-          </Scrollama>
+          <Waypoint onEnter={this.handleTopEnter} />
         </div>
         <div className={classes.info}>
           <Scrollama
@@ -139,10 +152,11 @@ class HomePage extends React.Component<HomePageProps, HomePageState> {
             <Step data={0} key={0}>
               <div className={classes.aboutSection}>
                 <Section
-                  activeBlocks={this.state.activeBlocks}
+                  activeBlocks={activeBlocks}
                   infoBlock={{
                     id: 0,
-                    text: "January 23rd: Sign Up",
+                    date: "January 1st",
+                    text: "Sign Up",
                     color: trackColors.red
                   }}
                 >
@@ -153,10 +167,11 @@ class HomePage extends React.Component<HomePageProps, HomePageState> {
             <Step data={1} key={1}>
               <div className={classes.activitiesSection}>
                 <Section
-                  activeBlocks={this.state.activeBlocks}
+                  activeBlocks={activeBlocks}
                   infoBlock={{
                     id: 1,
-                    text: "February 29th: Get admissions result",
+                    date: "January 14th",
+                    text: "Get admissions result",
                     color: trackColors.orange
                   }}
                 >
@@ -172,10 +187,11 @@ class HomePage extends React.Component<HomePageProps, HomePageState> {
             <Step data={2}>
               <div className={classes.tracksSection}>
                 <Section
-                  activeBlocks={this.state.activeBlocks}
+                  activeBlocks={activeBlocks}
                   infoBlock={{
                     id: 2,
-                    text: "March 23rd: Go to hackathon!",
+                    date: "February 15th",
+                    text: "Go to hackathon!",
                     color: trackColors.green
                   }}
                 >

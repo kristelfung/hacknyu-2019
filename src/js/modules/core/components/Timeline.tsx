@@ -2,8 +2,8 @@ import * as React from "react";
 import { Styles } from "react-jss";
 import injectSheet from "react-jss/lib/injectSheet";
 import Line from "./Line";
-import {Theme} from "../../types";
-import {trackColors} from "../../ThemeInjector";
+import { Theme } from "../../types";
+import { trackColors } from "../../ThemeInjector";
 
 const styles = (theme: Theme): Styles => ({
   Timeline: {
@@ -19,13 +19,11 @@ interface Props {
   classes: { [s: string]: string };
 }
 
-
-
 const Timeline: React.SFC<Props> = ({ classes }) => {
   return (
     <div className={classes.Timeline}>
       {Object.values(trackColors).map((color, index) => {
-          return <Line color={color} key={index} />;
+        return <Line color={color} key={index} />;
       })}
     </div>
   );

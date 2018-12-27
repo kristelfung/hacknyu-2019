@@ -4,29 +4,22 @@ import injectSheet, { Styles } from "react-jss";
 import { withRouter } from "react-router-dom";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { State, Theme } from "../../types";
+import { ReduxState, Theme } from "../../types";
 // @ts-ignore
 import { addUser, deleteUser, refreshWindowDimensions } from "../coreActions";
 import Header from "./Header";
 import { User } from "firebase";
 import UserInfo from "./UserInfo";
 import { auth } from "../../../firebase";
+import Alerts from "./Alerts";
 
-const styles = (theme: Theme): Styles => ({
-  app: {
-    backgroundColor: theme.backgroundColor,
-    color: theme.fontColor,
-    transition: "background-color 2s, font-color 2s",
-    fontFamily: "mr-eaves-xl-modern, sans-serif",
-    width: "100vw",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  }
-});
+
+interface MainAppStyles<T> extends Styles {
+  MainApp: T
+}
 
 interface Props {
-  classes: { [s: string]: string };
+  classes: MainAppStyles<string>;
   children: ReactNode;
   error: string;
   location: Location;
@@ -35,6 +28,22 @@ interface Props {
   deleteUser: () => any;
   onResizeWindow: () => any;
 }
+
+
+const styles = (theme: Theme): MainAppStyles<object> => ({
+  MainApp: {
+    backgroundColor: theme.backgroundColor,
+    color: theme.fontColor,
+    transition: "background-color 2s, font-color 2s",
+    fontFamily: theme.fontFamily,
+    width: "100vw",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "0"
+  }
+});
+
 
 class MainApp extends React.Component<Props> {
   constructor(props: Props) {
@@ -60,7 +69,8 @@ class MainApp extends React.Component<Props> {
   render() {
     let { classes, error, children, user } = this.props;
     return (
-      <div className={classes.app}>
+      <div className={classes.MainApp}>
+        <Alerts />
         <Header />
         {user && <UserInfo user={user} />}
         {error && <h2 className={classes.error}> {error} </h2>}
@@ -70,8 +80,8 @@ class MainApp extends React.Component<Props> {
   }
 }
 
-const mapStateToProps = (state: State) => ({
-  error: state.core.error,
+const mapStateToProps = (state: ReduxState) => ({
+  error: state.core.appError,
   user: state.core.user
 });
 
@@ -87,5 +97,8 @@ const mapDispatchToProps = (dispatch: any) => ({
 export default compose(
   withRouter,
   injectSheet(styles),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(MainApp);

@@ -1,15 +1,22 @@
-import * as React from "react"
-import {User} from "firebase";
-import {Styles} from "react-jss";
+import * as React from "react";
+import { User } from "firebase";
+import { Styles } from "react-jss";
 import Avatar from "./Avatar";
 import injectSheet from "react-jss/lib/injectSheet";
-import {Theme} from "../../types";
+import { Theme } from "../../types";
 
 interface Props {
-  classes: { [s: string]: string }
-  user: User
+  classes: { [s: string]: string };
+  user: User;
 }
-const styles = (theme: Theme): Styles => ({
+
+interface UserInfoStyles {
+  UserInfo: object;
+  greeting: object;
+  "@media (max-width: 800px)": object;
+}
+
+const styles = (theme: Theme): UserInfoStyles => ({
   UserInfo: {
     backgroundColor: theme.highlightColor,
     display: "flex",
@@ -31,7 +38,7 @@ const styles = (theme: Theme): Styles => ({
       top: "auto"
     }
   }
-})
+});
 
 const UserInfo: React.SFC<Props> = ({ classes, user }) => {
   return (
@@ -39,7 +46,7 @@ const UserInfo: React.SFC<Props> = ({ classes, user }) => {
       <h2 className={classes.greeting}> Welcome {user.displayName}! </h2>
       <Avatar user={user} />
     </div>
-  )
+  );
 };
 
 export default injectSheet(styles)(UserInfo);
