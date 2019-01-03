@@ -34,20 +34,23 @@ interface FormValues {
 
 const styles = (theme: Theme): LoginPageStyles<JssRules> => ({
   LoginPage: {
-    padding: "30px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     height: "100%",
-    width: "75%",
-    color: theme.fontColor,
-    backgroundColor: theme.formBackground
+    width: "100%",
+    maxWidth: theme.containerSmallWidth,
+    color: theme.secondFont,
+    backgroundColor: theme.formBackground,
+    paddingTop: "3em",
+    paddingBottom: "1em",
+    borderRadius: "0.5em"
   },
   form: {
     display: "flex",
     flexDirection: "column",
     padding: "20px",
-    alignItems: "flex-end"
+    alignItems: "center"
   },
   registerLink: {
     padding: "20px 20px 0px 20px",
@@ -56,6 +59,10 @@ const styles = (theme: Theme): LoginPageStyles<JssRules> => ({
   resetPasswordLink: {
     padding: "5px 20px 20px 20px",
     fontSize: "1.2em"
+  },
+  underline: {
+    border: "2px solid #6fb1f5",
+    width: "2em"
   }
 });
 
@@ -88,7 +95,8 @@ const LoginPage: React.SFC<Props> = ({
   };
   return (
     <div className={classes.LoginPage}>
-      <h1> Login </h1>
+      <h1> LOGIN </h1>
+      <hr className={classes.underline}></hr>
       <Form
         onSubmit={handleSubmit}
         validate={validateLogin}
@@ -118,17 +126,15 @@ const LoginPage: React.SFC<Props> = ({
             </Field>
             <Button
               disabled={invalid || isSubmitting}
-              width="100px"
               type="submit"
             >
-              Login
+              LOGIN
             </Button>
             <Button
               disabled={isSubmitting}
-              width="200px"
               onClick={handleGoogleLogin}
             >
-              Login w/ Google
+              LOGIN W/ GOOGLE
             </Button>
             <Link to="/register" className={classes.registerLink}>
               Don't have an account? Register

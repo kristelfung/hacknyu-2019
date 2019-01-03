@@ -798,7 +798,6 @@ export const schools = [
   "New York City College of Technology, CUNY",
   "New York Institute of Technology",
   "New York University",
-  "New York University Abu Dhabi",
   "Newcastle University",
   "Newton South High School",
   "Niagara College",

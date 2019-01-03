@@ -5,20 +5,18 @@ import { User } from "firebase";
 import { bindActionCreators, compose } from "redux";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
-import { Theme } from "../../types";
+import { JssRules, Theme } from "../../types";
 import Button from "./Button";
 import PasswordForm from "./UpdatePasswordForm";
-import { Link } from "react-router-dom";
+import ProfilePic from "./ProfilePic";
 
-interface ProfilePageStyles extends Styles {
-  ProfilePage: object;
-  profilePic: object;
-  roundImg: object;
-  name: object;
+interface ProfilePageStyles<T> extends Styles {
+  ProfilePage: T;
+  name: T;
 }
 
 interface Props {
-  classes: { [s: string]: string };
+  classes: ProfilePageStyles<string>;
   user: User;
 }
 
@@ -26,26 +24,26 @@ interface State {
   isPasswordFormVisible: boolean;
 }
 
-const styles = (theme: Theme): ProfilePageStyles => ({
+const defaults = {
+  displayName: "Add your name to the application!",
+  photoURL: "/img/blank-profile.png"
+};
+
+const styles = (theme: Theme): ProfilePageStyles<JssRules> => ({
   ProfilePage: {
-    width: "80vw",
+    width: "100%",
+    maxWidth: theme.containerWidth,
     height: "100vh",
-    padding: "20px",
+    paddingTop: "3em",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: theme.formBackground
+    backgroundColor: theme.formBackground,
+    borderRadius: "5px",
+    color: theme.secondFont
   },
   name: {
     paddingBottom: "5%"
-  },
-  profilePic: {
-    display: "flex",
-    maxWidth: "200px",
-    paddingBottom: "5%"
-  },
-  roundImg: {
-    borderRadius: "50%"
   }
 });
 
@@ -55,36 +53,32 @@ class ProfilePage extends React.Component<Props, State> {
     this.state = {
       isPasswordFormVisible: false
     };
-  }
-  shouldComponentUpdate(nextProps: Props, nextState: object): boolean {
-    if (!nextProps.user) {
-      nextProps.push("/login");
-    }
-    return true;
+    this.fileUploader = React.createRef();
   }
 
   togglePasswordForm = () => {
     const { isPasswordFormVisible } = this.state;
     this.setState({ isPasswordFormVisible: !isPasswordFormVisible });
   };
+
   render() {
-    let { user, classes } = this.props;
-    // Just in case this page renders even after a user signs out
-    if (!user) {
-      return (
-        <div className={classes.ProfilePage}>
-          Please <Link to="/login"> log in </Link> to see your profile page
-        </div>
-      );
+    let { user, classes, application } = this.props;
+    const { firstName, lastName } = application;
+    let userInfo = {
+      ...defaults,
+      ...user,
+    };
+
+    if (firstName && lastName) {
+      userInfo.displayName = `${firstName} ${lastName}`;
     }
     return (
       <div className={classes.ProfilePage}>
-        <h1 className={classes.name}> {user.displayName} </h1>
-        <div className={classes.profilePic}>
-          <img src={user.photoURL} className={classes.roundImg} />
-        </div>
-
-        <Button onClick={this.togglePasswordForm}>Change Password</Button>
+        <h1 className={classes.name}>
+          { userInfo.displayName}
+        </h1>
+        <ProfilePic photoURL={userInfo.photoURL} uid={user.uid}/>
+        <Button onClick={this.togglePasswordForm}>CHANGE PASSWORD</Button>
         {this.state.isPasswordFormVisible && <PasswordForm />}
       </div>
     );
@@ -92,7 +86,8 @@ class ProfilePage extends React.Component<Props, State> {
 }
 
 const mapStateToProps = state => ({
-  user: state.core.user
+  user: state.core.user,
+  application: state.core.applyForm.formData
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({ push }, dispatch);

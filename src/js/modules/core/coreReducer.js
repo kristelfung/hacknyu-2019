@@ -4,7 +4,6 @@ import {
   CLEAR_ERROR,
   CLEAR_NOTIFICATION,
   DELETE_USER,
-  LOCATION_CHANGE,
   LOGIN_FULFILLED,
   LOGIN_PENDING,
   LOGIN_REJECTED,
@@ -19,8 +18,21 @@ import {
   UPDATE_PASSWORD_FULFILLED,
   UPDATE_PASSWORD_REJECTED,
   UPDATE_PASSWORD_PENDING,
-  RESET_PASSWORD_PENDING
+  RESET_PASSWORD_PENDING,
+  UPLOAD_PROFILE_PICTURE_FULFILLED,
+  UPLOAD_PROFILE_PICTURE_REJECTED,
+  SUBMIT_APP_PENDING,
+  SUBMIT_APP_FULFILLED,
+  SUBMIT_APP_REJECTED,
+  UPLOAD_RESUME_PENDING,
+  UPLOAD_RESUME_FULFILLED,
+  UPLOAD_RESUME_REJECTED,
+  GET_FORM_DATA_FULFILLED,
+  GET_FORM_DATA_REJECTED,
+  LOADING_FULFILLED,
+  LOADING_REJECTED
 } from "./coreActions";
+import { LoadingStates } from "../types";
 
 // getWindowWidth & getWindowHeight was
 // adapted from http://stackoverflow.com/a/8876069/1291659
@@ -43,14 +55,17 @@ const getViewportHeight = () => {
 const initialState = {
   viewportWidth: getViewportWidth(),
   viewportHeight: getViewportHeight(),
-  user: {},
+  user: undefined,
   errors: {},
   notifications: {},
+  applyForm: { isSubmitting: false },
   loginForm: { isSubmitting: false },
   registerForm: { isSubmitting: false },
+  resumeForm: { isSubmitting: false },
   resetPasswordForm: { isSubmitting: false },
   updatePasswordForm: { isSubmitting: false },
-  passwordEmailSent: false
+  passwordEmailSent: false,
+  loadingState: LoadingStates.Loading
 };
 
 const reducer = (state = { ...initialState }, action) => {
@@ -66,6 +81,62 @@ const reducer = (state = { ...initialState }, action) => {
         // override width/height which will refresh app view
         return Object.assign({ ...state }, { viewportWidth, viewportHeight });
       } else return state; //otherwise do not mutate
+    case UPLOAD_RESUME_PENDING:
+      return { ...state, resumeForm: { isSubmitting: true } };
+    case UPLOAD_RESUME_FULFILLED:
+      return {
+        ...state,
+        resumeForm: { isSubmitting: true },
+        notifications: {
+          ...state.notifications,
+          resume: action.payload
+        }
+      };
+    case UPLOAD_RESUME_REJECTED:
+      return {
+        ...state,
+        errors: { ...state.errors, resume: action.payload.message }
+      };
+    case SUBMIT_APP_PENDING:
+      return {
+        ...state,
+        applyForm: { isSubmitting: true }
+      };
+    case SUBMIT_APP_FULFILLED:
+      const { message, submitTimestamp, ...formData } = action.payload;
+      if (submitTimestamp) {
+        return {
+          ...state,
+          applyForm: {
+            ...state.applyForm,
+            isSubmitting: false,
+            formData,
+            submitTimestamp,
+          },
+          notifications: {
+            ...state.notifications,
+            apply: message
+          }
+        };
+      }
+      return {
+        ...state,
+        applyForm: {
+          ...state.applyForm,
+          isSubmitting: false,
+          formData,
+        },
+        notifications: {
+          ...state.notifications,
+          apply: message
+        }
+      };
+    case SUBMIT_APP_REJECTED:
+      return {
+        ...state,
+        applyForm: { isSubmitting: false },
+        errors: { ...state.errors, apply: action.payload.message }
+      };
     case LOGIN_PENDING:
       return {
         ...state,
@@ -93,7 +164,7 @@ const reducer = (state = { ...initialState }, action) => {
         user: undefined,
         notifications: {
           ...state.notifications,
-          logout: "Successfully logged out"
+          logout: action.payload
         }
       };
     case LOGOUT_REJECTED:
@@ -162,6 +233,42 @@ const reducer = (state = { ...initialState }, action) => {
         errors: { ...state.errors, updatePassword: action.payload.message },
         updatePasswordForm: { isSubmitting: false }
       };
+    case GET_FORM_DATA_FULFILLED:
+      if (action.payload) {
+        const {
+          resumeTimestamp,
+          submitTimestamp,
+          ...formData
+        } = action.payload;
+        return {
+          ...state,
+          applyForm: {
+            ...state.applyForm,
+            formData,
+            resumeTimestamp,
+            submitTimestamp
+          }
+        };
+      }
+      return state;
+    case GET_FORM_DATA_REJECTED:
+      return {
+        ...state,
+        error: {
+          ...state.errors,
+          apply: action.payload.message
+        }
+      };
+    case LOADING_FULFILLED:
+      return {
+        ...state,
+        loadingState: LoadingStates.Loaded
+      };
+    case LOADING_REJECTED:
+      return {
+        ...state,
+        loadingState: LoadingStates.Failed
+      };
     case ADD_USER:
       return {
         ...state,
@@ -169,8 +276,7 @@ const reducer = (state = { ...initialState }, action) => {
       };
     case DELETE_USER:
       return {
-        ...state,
-        user: undefined
+        ...state
       };
     case CLEAR_EMAIL_STATE:
       return { ...state, passwordEmailSent: false };
@@ -187,6 +293,16 @@ const reducer = (state = { ...initialState }, action) => {
       return {
         ...state,
         notifications: newNotifications
+      };
+    case UPLOAD_PROFILE_PICTURE_REJECTED:
+      return {
+        ...state,
+        errors: { ...state.errors, fileError: action.payload }
+      };
+    case UPLOAD_PROFILE_PICTURE_FULFILLED:
+      return {
+        ...state,
+        user: { ...state.user, photoURL: action.payload }
       };
     default:
       break;

@@ -7,65 +7,9 @@ html, body
     padding    : 0;
     width      : 100%;
     height     : 100%;
-    background-color: #e3f2fd;
+    background-color: #57068c;
     min-width  : 360px !important;
     margin     : 0 auto;
-}
-
-#app
-{
-    display    : inline;
-}
-
-/* relative-pixel screen-width cutoff points */
-
-@media (max-width : 900px)
-{
-    .md-maximum
-    {
-        display : none !important;
-    }
-}
-
-@media (min-width : 900px)
-{
-    .md-minimum
-    {
-        display : none !important;
-    }
-}
-
-
-@media (max-width : 600px)
-{
-    .sm-maximum
-    {
-        display : none !important;
-    }
-}
-
-@media (min-width : 600px)
-{
-    .sm-minimum
-    {
-        display : none !important;
-    }
-}
-
-@media (max-width : 360px)
-{
-    .xs-maximum
-    {
-        display : none !important;
-    }
-}
-
-@media (min-width : 360px)
-{
-    .xs-minimum
-    {
-        display : none !important;
-    }
 }
 
 /* fix for auto-complete yellow bg */

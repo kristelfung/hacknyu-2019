@@ -24,12 +24,13 @@ const styles: SubwayStopStyles<JssRules> = {
     width: "25px",
     height: "25px",
     border: "0.5px solid #d9d9d9",
+    top: "-6px",
     left: props =>
       `${(props.stopIndex + 1) * (100 / STOPS_COUNT) - props.offset}vw`,
     transform: props =>
       props.stopIndex < props.currentStop
-        ? "scale(1, 1) translateY(-6px)"
-        : "scale(0, 0) translateY(-6px)"
+        ? "scale(1)"
+        : "scale(0)"
   }
 };
 

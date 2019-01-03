@@ -13,11 +13,18 @@ export interface Errors {
   updatePasswordError: string;
 }
 
+export enum LoadingStates {
+  Loading,
+  Loaded,
+  Failed
+}
+
 export interface CoreState {
   viewportWidth: number;
   viewportHeight: number;
   user: User;
   errors: Errors;
+  loadingState: LoadingStates;
 }
 
 export interface Theme {
@@ -32,15 +39,21 @@ export interface Theme {
   formBackground: string;
   submitButton: string;
   submitButtonHover: string;
+  submitButtonDeactivated: string;
   errorBorder: string;
   errorText: string;
   errorBackground: string;
   notificationBackground: string;
   notificationBorder: string;
+  overlayColor: string;
+  fontFamily: string;
+  inputPadding: string;
   red: string;
   green: string;
   blue: string;
   orange: string;
+  containerWidth: string;
+  containerSmallWidth: string;
 }
 export type JssValue =
   | string
@@ -54,4 +67,3 @@ export type JssValue =
 export type JssFunction<Props> = (props: Props) => JssValue;
 
 export type JssRules = { [s: string]: JssValue | JssFunction | JssRules };
-

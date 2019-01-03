@@ -1,54 +1,66 @@
 import * as React from "react";
 import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { Theme } from "../../types";
+import { JssRules, Theme } from "../../types";
+
+interface AboutSectionStyles<T> extends Styles {
+  AboutSection: T;
+  content: T;
+  intro: T;
+  title: T;
+  fancyRectangle: T;
+}
 
 interface Props {
   classes: { [s: string]: string };
 }
-const styles = (_theme: Theme): Styles => ({
+const styles = (theme: Theme): AboutSectionStyles<JssRules> => ({
   AboutSection: {
     display: "flex",
+    alignItems: "center",
+    padding: "40px",
     flexDirection: "column",
     margin: "0 5% 0 5%"
   },
   content: {
     display: "flex",
-    flexWrap: "wrap"
-  },
-  intro: {
-    fontSize: "1.8em",
-    maxWidth: "800px"
-  },
-  title: {
-    fontSize: "3em"
-  },
-  image: {
-    maxWidth: "700px",
-    width: "65vw"
-  },
-  imageContainer: {
-    display: "flex",
-    width: "100%",
-    flexWrap: "wrap",
+    flexDirection: "column",
+    borderRadius: "25px",
+    padding: "5% 0 5% 0",
+    margin: "5%",
+    width: "80vw",
+    maxWidth: "750px",
+    backgroundColor: theme.secondBackgroundHighlight,
+    color: theme.secondFont,
     alignItems: "center",
     justifyContent: "center",
-    padding: "20px"
-  }
+    boxShadow: "4px 7px 21px -2px rgba(0,0,0,0.75)"
+  },
+  underline: {
+    border: "2px solid #6fb1f5",
+    width: "2em"
+  },
+  intro: {
+    fontSize: "1.4rem",
+    maxWidth: "500px",
+    width: "60vw",
+    lineHeight: "1.1em"
+  },
+  title: {
+    fontSize: "2em"
+  },
 });
 
 const AboutSection: React.SFC<Props> = ({ classes }) => {
   return (
     <div className={classes.AboutSection}>
-      <h1 className={classes.title}> About </h1>
       <div className={classes.content}>
+        <h1 className={classes.title}> ABOUT </h1>
+        <hr className={classes.underline} />
         <p className={classes.intro}>
           HackNYU is NYU's annual hackathon. It takes place simultaneously in
           New York, Abu Dhabi and Shanghai over 48 hours. HackNYU is free, and
           made possible thanks to our wonderful sponsors and volunteers.
         </p>
-        <div className={classes.imageContainer}>
-          <img className={classes.image} src="/img/tables.jpg" />
-        </div>
       </div>
     </div>
   );

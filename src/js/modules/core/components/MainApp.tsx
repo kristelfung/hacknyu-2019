@@ -4,31 +4,33 @@ import injectSheet, { Styles } from "react-jss";
 import { withRouter } from "react-router-dom";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { ReduxState, Theme } from "../../types";
+import { LoadingStates, ReduxState, Theme } from "../../types";
 // @ts-ignore
-import { addUser, deleteUser, refreshWindowDimensions } from "../coreActions";
-import Header from "./Header";
+import { loadInitialState, refreshWindowDimensions } from "../coreActions";
+import Header from "./Navbar";
 import { User } from "firebase";
 import UserInfo from "./UserInfo";
-import { auth } from "../../../firebase";
 import Alerts from "./Alerts";
-
+import LoadingIcon from "./LoadingIcon";
+import ErrorPage from "./ErrorPage";
 
 interface MainAppStyles<T> extends Styles {
-  MainApp: T
+  MainApp: T;
+  loadingScreen: T;
+  loadingIcon: T;
+  loadingText: T;
 }
 
 interface Props {
   classes: MainAppStyles<string>;
   children: ReactNode;
-  error: string;
   location: Location;
   user: User;
   addUser: (u: User) => any;
   deleteUser: () => any;
   onResizeWindow: () => any;
+  loadingState: LoadingStates
 }
-
 
 const styles = (theme: Theme): MainAppStyles<object> => ({
   MainApp: {
@@ -41,20 +43,34 @@ const styles = (theme: Theme): MainAppStyles<object> => ({
     flexDirection: "column",
     alignItems: "center",
     padding: "0"
+  },
+  loadingScreen: {
+    fontFamily: theme.fontFamily,
+    fontSize: "1.2em",
+    fontVariant: "small-caps",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    height: "80vh"
+  },
+  loadingIcon: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    color: theme.fontColor,
+    padding: "50px",
+  },
+  loadingText: {
+    paddingBottom: "30px"
   }
 });
-
 
 class MainApp extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        props.addUser(user);
-      } else {
-        props.deleteUser();
-      }
-    });
+    props.loadInitialState(props.location);
   }
 
   onResizeWindow = () => {
@@ -66,14 +82,33 @@ class MainApp extends React.Component<Props> {
   componentWillUnmount() {
     window.removeEventListener("resize", this.onResizeWindow);
   }
+  componentDidUpdate() {
+    const { loadingState, loadInitialState, location } = this.props;
+    if (loadingState === LoadingStates.Loading) {
+      loadInitialState(location);
+    }
+  }
+
   render() {
-    let { classes, error, children, user } = this.props;
+    let { classes, children, user, loadingState } = this.props;
+    if (loadingState === LoadingStates.Loading) {
+      return (
+        <div className={classes.loadingScreen}>
+          <LoadingIcon width="100px" height="100px" padding="0 20px 0 0"/>
+        </div>
+      );
+    }
+    if (loadingState === LoadingStates.Failed) {
+      return (
+        <ErrorPage/>
+      );
+    }
+
     return (
       <div className={classes.MainApp}>
         <Alerts />
         <Header />
         {user && <UserInfo user={user} />}
-        {error && <h2 className={classes.error}> {error} </h2>}
         {children}
       </div>
     );
@@ -81,13 +116,14 @@ class MainApp extends React.Component<Props> {
 }
 
 const mapStateToProps = (state: ReduxState) => ({
-  error: state.core.appError,
-  user: state.core.user
+  user: state.core.user,
+  loadingState: state.core.loadingState
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-  addUser: (user: User) => dispatch(addUser(user)),
-  deleteUser: () => dispatch(deleteUser()),
+  loadInitialState: (location: Location) => {
+    dispatch(loadInitialState(location));
+  },
   onResizeWindow: () => {
     dispatch(refreshWindowDimensions());
   }

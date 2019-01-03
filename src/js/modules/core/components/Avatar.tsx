@@ -11,8 +11,9 @@ const styles: AvatarStyles = {
     width: "50px",
     height: "50px",
     padding: "10px",
-    borderRadius: "50%"
-  }
+    borderRadius: "50%",
+    objectFit: "cover"
+  },
 };
 
 interface Props {

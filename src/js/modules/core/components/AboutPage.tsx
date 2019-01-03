@@ -7,22 +7,36 @@ import { faAws } from "@fortawesome/free-brands-svg-icons/faAws";
 
 const styles = (theme: Theme): Styles => ({
   AboutPage: {
-    fontSize: "2em",
     backgroundColor: theme.secondBackground,
     color: theme.secondFont,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    width: "80vw",
-    padding: "5%"
+    height: "100%",
+    maxWidth: theme.containerWidth,
+    borderRadius: "0.5em"
   },
   icons: {
     display: "flex",
     width: "100px",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    fontSize: "2em",
+    padding: "1em"
   },
   text: {
-    maxWidth: "500px"
+    fontSize: "1.6em",
+    paddingLeft: "2em",
+    paddingRight: "2em",
+  },
+  title: {
+    fontSize: "2em",
+    paddingTop: "1.5em",
+    paddingBottom: "0.2em",
+    textTransform: "uppercase"
+  },
+  underline: {
+    border: "2px solid #6fb1f5",
+    width: "2em"
   }
 });
 
@@ -33,7 +47,8 @@ interface Props {
 const AboutPage: React.SFC<Props> = ({ classes }) => {
   return (
     <div className={classes.AboutPage}>
-      <h1> About Us </h1>
+      <h1 className={classes.title}> About Us </h1>
+      <hr className={classes.underline}></hr>
       <p className={classes.text}>
         HackNYU has been entirely student run from the beginning. We rely on the
         generosity of volunteers and sponsors to host HackNYU every year. If you
@@ -41,16 +56,17 @@ const AboutPage: React.SFC<Props> = ({ classes }) => {
         interested in volunteering, sign up here.
       </p>
 
-      <h2> Tech Details </h2>
-      <div className={classes.icons}>
-        <FontAwesomeIcon icon={faReact} />
-        <FontAwesomeIcon icon={faAws} />
-      </div>
+      <h1 className={classes.title}> Tech Details </h1>
+      <hr className={classes.underline}></hr>
       <p className={classes.text}>
         This site is written in React with TypeScript, Firebase, JSS and Redux.
         It is hosted on AWS. If you have any complaints/bugs/compliments, please
         email nick at nicholasyang.com.
       </p>
+      <div className={classes.icons}>
+        <FontAwesomeIcon icon={faReact} />
+        <FontAwesomeIcon icon={faAws} />
+      </div>
     </div>
   );
 };

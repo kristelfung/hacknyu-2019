@@ -69,7 +69,7 @@ const UpdatePasswordForm: React.SFC<Props> = ({
             )}
           </Field>
           <Button type="submit" disabled={invalid || isSubmitting}>
-            Update
+            UPDATE
           </Button>
         </form>
       )}

@@ -1,6 +1,7 @@
 import * as React from "react";
 import injectSheet, { Styles } from "react-jss/lib/injectSheet";
 import { JssRules, Theme } from "../../types";
+import { ReactNodeLike } from "prop-types";
 
 interface Props {
   classes: { [s: string]: string };
@@ -26,24 +27,23 @@ interface Props {
   type: string;
   placeholder: string;
   input: object;
-  component: any;
   [p: string]: any;
+  children: ReactNodeLike;
 }
 
-interface InputStyles<T> extends Styles {
+interface SelectStyles<T> extends Styles {
   label: T;
   error: T;
   textField: T;
-  Input: T;
+  Select: T;
   inputArea: T;
 }
 
-const styles = (theme: Theme): InputStyles<JssRules> => ({
+const styles = (theme: Theme): SelectStyles<JssRules> => ({
   label: {
     padding: "5px",
-    width: "150px",
-    display: "flex",
-    alignItems: "center"
+    width: "175px",
+    lineHeight: "1.4rem"
   },
   error: {
     color: "red",
@@ -52,30 +52,34 @@ const styles = (theme: Theme): InputStyles<JssRules> => ({
   },
   textField: {
     marginLeft: "5px",
+    maxWidth: "400px",
     fontFamily: theme.fontFamily,
+    backgroundColor: "white",
     padding: "10px",
     fontSize: "1.5rem",
-    border: "none",
-    height: "40px"
+    height: "60px",
+    border: "none"
   },
-  Input: {
+  Select: {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
     fontSize: "1.3rem",
     padding: "15px"
   },
   inputArea: {
-    display: "flex"
+    display: "flex",
+    alignItems: "center"
   }
 });
 
-const Input: React.SFC<Props> = ({ component, classes, meta, input, label, ...props }) => {
+const Select: React.SFC<Props> = ({ children, classes, meta, input, label, ...props }) => {
   return (
-    <div className={classes.Input}>
+    <div className={classes.Select}>
       <div className={classes.inputArea}>
         <div className={classes.label}>{label} </div>
-        <input {...input} {...props} className={classes.textField} />
+        <select {...input} {...props} className={classes.textField}>
+          {children}
+        </select>
       </div>
       {meta.error && meta.touched && (
         <span className={classes.error}>{meta.error}</span>
@@ -84,4 +88,4 @@ const Input: React.SFC<Props> = ({ component, classes, meta, input, label, ...pr
   );
 };
 
-export default injectSheet(styles)(Input);
+export default injectSheet(styles)(Select);

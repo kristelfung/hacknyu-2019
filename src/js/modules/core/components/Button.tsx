@@ -15,18 +15,20 @@ const styles = (theme: Theme): ButtonStyles<JssRules> => ({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: theme.submitButton,
-    color: theme.secondFont,
+    color: theme.fontColor,
+    fontWeight: "350",
     margin: "5px",
-    fontVariant: "small-caps",
-    padding: "10px",
+    padding: "12px 25px",
     border: "none",
-    fontSize: "1.2em",
+    fontSize: "0.9em",
     transition: "background-color 0.4s",
+    borderRadius: "5px",
+    cursor: "pointer",
     "&:hover": {
       backgroundColor: theme.submitButtonHover
     },
     '&:disabled': {
-      backgroundColor: theme.submitButtonHover
+      backgroundColor: theme.submitButtonDeactivated
     }
   }
 });
@@ -42,7 +44,7 @@ interface Props {
 const Button: React.SFC<Props & React.HTMLAttributes> = props => {
   const { classes, children } = props;
   return (
-    <button {...props} className={classes.button}>
+    <button {...props} className={`${classes.button} ${props.className}`}>
       {children}
     </button>
   );

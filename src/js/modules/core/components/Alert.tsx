@@ -2,23 +2,23 @@ import * as React from "react";
 import { Styles } from "react-jss";
 import injectSheet from "react-jss/lib/injectSheet";
 import { JssRules, Theme } from "../../types";
-import { States } from "./AnimatedNotification";
-import { NOTIFICATION_TIME_INTERVALS } from "../../constants";
+import { States } from "./AnimatedAlert";
+import { ALERT_TIME_INTERVALS } from "../../constants";
 
-interface NotificationStyles<T> extends Styles {
-  Notification: T;
+interface AlertStyles<T> extends Styles {
+  Alert: T;
   text: T;
 }
 
 interface Props {
-  classes: NotificationStyles<string>;
+  classes: AlertStyles<string>;
   componentState: States;
   isError: boolean;
   message: string;
 }
 
-const styles = (theme: Theme): NotificationStyles<JssRules> => ({
-  Notification: {
+const styles = (theme: Theme): AlertStyles<JssRules> => ({
+  Alert: {
     color: theme.errorText,
     width: "300px",
     margin: "20px",
@@ -32,7 +32,7 @@ const styles = (theme: Theme): NotificationStyles<JssRules> => ({
       props.isError ? theme.errorBackground : theme.notificationBackground,
     transform: props =>
       props.componentState !== States.Mounted ? "translateX(-40vw)" : "none",
-    transition: `transform ${NOTIFICATION_TIME_INTERVALS.ANIMATION_TIME}ms`,
+    transition: `transform ${ALERT_TIME_INTERVALS.ANIMATION_TIME}ms`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
@@ -42,12 +42,12 @@ const styles = (theme: Theme): NotificationStyles<JssRules> => ({
   }
 });
 
-const Notification: React.SFC<Props> = ({ classes, message }) => {
+const Alert: React.SFC<Props> = ({ classes, message }) => {
   return (
-    <div className={classes.Notification}>
+    <div className={classes.Alert}>
       <div className={classes.text}> {message} </div>
     </div>
   );
 };
 
-export default injectSheet(styles)(Notification);
+export default injectSheet(styles)(Alert);

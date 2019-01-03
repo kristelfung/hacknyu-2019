@@ -1,10 +1,8 @@
 import * as React from "react";
 import { delay } from "../../utils";
-import { bindActionCreators } from "redux";
 import { clearError, clearNotification } from "../coreActions";
-import { connect } from "react-redux";
-import Notification from "./Notification";
-import { NOTIFICATION_TIME_INTERVALS } from "../../constants";
+import Notification from "./Alert";
+import { ALERT_TIME_INTERVALS } from "../../constants";
 
 export enum States {
   Mounting,
@@ -23,7 +21,7 @@ interface State {
   componentState: States;
 }
 
-class AnimatedNotification extends React.Component<Props, State> {
+class AnimatedAlert extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +35,7 @@ class AnimatedNotification extends React.Component<Props, State> {
       ANIMATION_BUFFER,
       DISPLAY_TIME,
       ANIMATION_TIME
-    } = NOTIFICATION_TIME_INTERVALS;
+    } = ALERT_TIME_INTERVALS;
     delay(ANIMATION_BUFFER)
       .then(() => this.setState({ componentState: States.Mounted }))
       .then(() => delay(DISPLAY_TIME))
@@ -60,4 +58,4 @@ class AnimatedNotification extends React.Component<Props, State> {
   }
 }
 
-export default AnimatedNotification;
+export default AnimatedAlert;

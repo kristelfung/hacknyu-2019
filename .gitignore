@@ -5,3 +5,9 @@ node_modules
 builds/**
 .idea/
 *.map
+.firebase
+.DS_Store
+
+functions/.runtimeconfig.json
+functions/node_modules
+functions/lib/*.js

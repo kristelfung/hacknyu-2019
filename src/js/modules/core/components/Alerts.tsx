@@ -4,7 +4,7 @@ import injectSheet from "react-jss/lib/injectSheet";
 import { Errors, JssRules } from "../../types";
 import { bindActionCreators, compose } from "redux";
 import { connect } from "react-redux";
-import AnimatedNotification from "./AnimatedNotification";
+import AnimatedAlert from "./AnimatedAlert";
 import { clearError, clearNotification } from "../coreActions"
 
 interface AlertsStyles<T> extends Styles {
@@ -20,6 +20,7 @@ interface Props {
 
 const styles: AlertsStyles<JssRules> = {
   Alerts: {
+    zIndex: "100",
     position: "fixed",
     top: "2vh",
     left: "2vw"
@@ -30,7 +31,7 @@ const Alerts: React.SFC<Props> = ({ clearError, clearNotification, notifications
   return (
     <div className={classes.Alerts}>
       {Object.entries(errors).map(([type, message], index) => (
-        <AnimatedNotification
+        <AnimatedAlert
           isError={true}
           type={type}
           clear={clearError}
@@ -39,7 +40,7 @@ const Alerts: React.SFC<Props> = ({ clearError, clearNotification, notifications
         />
       ))}
       {Object.entries(notifications).map(([type, message], index) => (
-        <AnimatedNotification
+        <AnimatedAlert
           isError={false}
           type={type}
           message={message}
