@@ -39,8 +39,21 @@ const UpdatePasswordForm: React.SFC<Props> = ({
       onSubmit={handleSubmit}
       validate={({ password, passwordConfirmation }) => {
         let errors: { password?: string } = {};
-        if (password && password.length < 8) {
+        if(!password){
+          errors.password = "Password is required";
+        }
+        else if (password.length < 8) {
           errors.password = "Password must be at least 8 characters";
+        }
+
+        if(!passwordConfirmation){
+          errors.passwordConfirmation = "Password confirmation is required";
+        }
+
+        if (password && passwordConfirmation){
+          if(password !== passwordConfirmation){
+            errors.passwordConfirmation = "Password must be the same as password confirmation";
+          }
         }
         return errors;
       }}

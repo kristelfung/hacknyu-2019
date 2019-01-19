@@ -8,15 +8,27 @@ import { resetPassword, clearEmailState } from "../coreActions";
 import Input from "./Input";
 import { connect } from "react-redux";
 import Button from "./Button";
+import Underline from "./Underline";
 
 const styles = (theme: Theme): object => ({
   ResetPasswordPage: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "5%",
-    width: "100vw",
-    backgroundColor: theme.formBackground
+    width: theme.containerSmallWidth,
+    backgroundColor: theme.formBackground,
+    color: theme.secondFont,
+    paddingTop: "3em",
+    paddingBottom: "3em",
+    borderRadius: "0.5em"
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end"
+  },
+  button: {
+    marginRight: "20px"
   }
 });
 
@@ -39,22 +51,10 @@ const ResetPasswordPage: React.SFC<Props> = ({
     resetPassword(values.email);
   };
 
-  if (passwordEmailSent) {
-    return (
-      <div className={classes.ResetPasswordPage}>
-        <h1> Reset Password </h1>
-        <div>
-          You already reset your password.
-          <a href="#" onClick={clearEmailState}>
-            Reset again?
-          </a>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className={classes.ResetPasswordPage}>
       <h1> Reset Password </h1>
+      <Underline />
       <Form
         onSubmit={handleSubmit}
         validate={values => {
@@ -78,7 +78,12 @@ const ResetPasswordPage: React.SFC<Props> = ({
                 />
               )}
             </Field>
-            <Button disabled={invalid || isSubmitting} type="submit">
+            <Button
+              className={classes.button}
+              disabled={invalid || isSubmitting}
+              width="160px"
+              type="submit"
+            >
               Reset Password
             </Button>
           </form>

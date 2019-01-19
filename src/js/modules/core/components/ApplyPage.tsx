@@ -36,10 +36,10 @@ interface ApplyPageStyles<T> extends Styles {
   loadingText: T;
   autocompleteItem: T;
   mlhPolicy: T;
-  underline: T;
   multipleCheckboxes: T;
   genderOptions: T;
   termsAndConditions: T;
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: T;
 }
 
 interface FormData {
@@ -62,6 +62,7 @@ interface FormData {
   major: string;
   gradYear: string;
   isFirstTime: string;
+  hearAbout: string;
   timesParticipated: string;
   track: string;
   tshirtSize: string;
@@ -72,10 +73,15 @@ interface FormData {
   isHalal: boolean;
   isGlutenFree: boolean;
 
+  otherDietaryRestrictions: string;
   allergies: string;
   codeOfConduct: boolean;
   privacyPolicy: boolean;
   resumeTimestamp: string; // timestamp
+
+  emergencyContactNumber: string;
+  emergencyContactName: string;
+  emergencyContactRelation: string;
 }
 
 interface ApplyPageState {
@@ -98,14 +104,17 @@ const requiredFields = {
   tshirtSize: "T-shirt size",
   gender: "Gender",
   codeOfConduct: "Code of Conduct",
-  privacyPolicy: "Private Policy"
+  privacyPolicy: "Private Policy",
+  emergencyContactName: "Emergency contact name",
+  emergencyContactNumber: "Emergency contact number",
+  emergencyContactRelation: "Relation to emergency contact"
 };
 
 const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
   ApplyPage: {
     display: "flex",
     width: "100%",
-    maxWidth: theme.containerWidth,
+    maxWidth: theme.containerMaxWidth,
     flexDirection: "column",
     alignItems: "center",
     backgroundColor: theme.formBackground,
@@ -124,9 +133,9 @@ const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    lineHeight: "1.3em",
+    lineHeight: "1.2em",
     fontSize: "1.5em",
-    padding: "40px"
+    padding: "40px 0 40px 0"
   },
   inputs: {
     display: "flex",
@@ -158,15 +167,32 @@ const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
     maxWidth: "500px",
     lineHeight: "1.8rem"
   },
-  underline: {
-    border: "2px solid #6fb1f5",
-    width: "2em"
-  },
   genderOptions: {
     padding: "40px"
   },
   termsAndConditions: {
     padding: "15px"
+  },
+  [`@media(max-width: ${theme.largeBreakpoint})`]: {
+    ApplyPage: {
+      width: theme.containerLargeWidth
+    }
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    ApplyPage: {
+      width: theme.containerMediumWidth
+    }
+  },
+  [`@media(max-width: ${theme.smallBreakpoint})`]: {
+    ApplyPage: {
+      width: theme.containerMobileWidth
+    },
+    multipleCheckboxes: {
+      width: "10em"
+    },
+    inputs: {
+      alignItems: "center"
+    }
   },
 });
 
@@ -225,14 +251,12 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
               <form onSubmit={handleSubmit}>
                 <div className={classes.inputs}>
                   <Field
-                    className={classes.input}
                     name="firstName"
                     label="First Name:"
                     component={Input}
                     placeholder="Rose"
                   />
                   <Field
-                    className={classes.input}
                     name="lastName"
                     label="Last Name:"
                     component={Input}
@@ -246,7 +270,6 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     component={Input}
                   />
                   <Field
-                    className={classes.input}
                     name="gender"
                     label="Gender:"
                     component={Select}
@@ -287,28 +310,8 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     placeholder="1-800-867-5309"
                   />
 
-                  <UploadResumeButton
-                    uid={user.uid}
-                    resumeTimestamp={formData && formData.resumeTimestamp}
-                  />
+                  <UploadResumeButton uid={user.uid} />
 
-                  <fieldset className={classes.multipleCheckboxes}>
-                    <legend className={classes.inputLabel}>
-                      Any dietary restrictions? Check all that apply.
-                    </legend>
-                    <Checkbox name="isVeggie">Vegetarian</Checkbox>
-                    <Checkbox name="isVegan">Vegan</Checkbox>
-                    <Checkbox name="isKosher">Kosher</Checkbox>
-                    <Checkbox name="isHalal">Halal</Checkbox>
-                    <Checkbox name="isGlutenFree">Gluten Free</Checkbox>
-                  </fieldset>
-
-                  <Field
-                    className={classes.input}
-                    label="(Optional) Any other dietary restrictions or allergies?"
-                    name="allergies"
-                    component={Input}
-                  />
                   <Field
                     name="school"
                     label="School:"
@@ -316,10 +319,10 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     schools={schools}
                     classes={classes}
                   />
+
                   <Condition when="school" is="New York University">
                     <Field
                       label="NYU School:"
-                      className={classes.input}
                       name="nyuSchool"
                       component={Select}
                     >
@@ -364,7 +367,6 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                   <Condition when="nyuSchool" is="other">
                     <label>
                       <Field
-                        className={classes.input}
                         name="nyuSchoolOther"
                         component="input"
                       />
@@ -372,7 +374,6 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                   </Condition>
                   <Field
                     label="Current year of study:"
-                    className={classes.input}
                     name="yearOfStudy"
                     component={Select}
                   >
@@ -385,22 +386,22 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     <option value="graduate">
                       Graduate Student (Masters or Doctorate)
                     </option>
-                    <option value="post-grad"> Post Graduate </option>
+                    <option value="post-grad"> Post Graduate (must be within 12 months of graduation to be eligible)</option>
                   </Field>
                   <Field
                     label="Major:"
-                    className={classes.input}
                     name="major"
                     component={Input}
                   />
 
                   <Field
-                    className={classes.input}
-                    label="Anticipated graduation year:"
+                    label="Graduation year:"
                     name="gradYear"
                     component={Select}
                   >
                     <option value=""> Select an option </option>
+                    <option value="2017-or-earlier"> 2017 or earlier </option>
+                    <option value="2018"> 2018 </option>
                     <option value="2019"> 2019 </option>
                     <option value="2020"> 2020 </option>
                     <option value="2021"> 2021 </option>
@@ -411,7 +412,6 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
 
                   <Field
                     label="Is this your first time at HackNYU?"
-                    className={classes.input}
                     name="isFirstTime"
                     component={Select}
                   >
@@ -422,7 +422,6 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                   <Condition when="isFirstTime" is="no">
                     <label>
                       <Field
-                        className={classes.input}
                         name="timesParticipated"
                         label="How many times have you participated at HackNYU so far?"
                         component={Select}
@@ -436,23 +435,41 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     </label>
                   </Condition>
                   <Field
-                    className={classes.input}
+                    label="(Optional) How did you hear about HackNYU?"
+                    name="hearAbout"
+                    component={Select}
+                  >
+                    <option value=""> Select an option </option>
+                    <option value="social-media"> Social media (Facebook, Twitter, Instagram) </option>
+                    <option value="mlh"> Major League Hacking </option>
+                    <option value="sponsor"> One of our sponsors or partners </option>
+                    <option value="word-of-mouth"> Friends, professors, or co-workers </option>
+                    <option value="email"> Email </option>
+                    <option value="previous-participant"> I have attended HackNYU in the past </option>
+                  </Field>
+                  <Field
                     label="Which track are you currently most interested in hacking in? (You can change your track at the hackathon)"
                     name="track"
                     component={Select}
                   >
-                    <option value=""> Select an option </option>
-                    <option value="assistive-tech"> Assistive Tech </option>
-                    <option value="ed-tech">Educational Technology</option>
-                    <option value="fin-tech"> Financial Technology </option>
-                    <option value="healthcare"> Healthcare </option>
-                    <option value="sustain-social-impact">
-                      Sustainability and Social Impact
+                    <option value=""> 
+                    Select an option 
+                    </option>
+                    <option value="education">
+                    Education
+                    </option>
+                    <option value="financial-empowerment"> 
+                    Financial Empowerment 
+                    </option>
+                    <option value="health-well-being">
+                     Health and Well-Being
+                     </option>
+                    <option value="sustainability">
+                      Sustainability
                     </option>
                   </Field>
 
                   <Field
-                    className={classes.input}
                     label="Unisex t-shirt size:"
                     name="tshirtSize"
                     component={Select}
@@ -466,13 +483,56 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
                     <option value="xx-large"> XXL </option>
                   </Field>
 
+                  <fieldset className={classes.multipleCheckboxes}>
+                    <legend className={classes.inputLabel}>
+                      Any dietary restrictions? Check all that apply.
+                    </legend>
+                    <Checkbox name="isVeggie">Vegetarian</Checkbox>
+                    <Checkbox name="isVegan">Vegan</Checkbox>
+                    <Checkbox name="isKosher">Kosher</Checkbox>
+                    <Checkbox name="isHalal">Halal</Checkbox>
+                    <Checkbox name="isGlutenFree">Gluten Free</Checkbox>
+                  </fieldset>
 
                   <Field
-                    className={classes.input}
+                    label="(Optional) Any other dietary restrictions or allergies?"
+                    name="otherDietaryRestrictions"
+                    component={Input}
+                  />
+
+                  <Field
                     label="(Optional) Any allergies?"
                     name="allergies"
                     component={Input}
                   />
+
+                  <fieldset className={classes.multipleCheckboxes}>
+                    <legend className={classes.inputLabel}>
+                      Emergency contact information
+                    </legend>
+
+                    <Field
+                      label="Emergency contact number"
+                      name="emergencyContactNumber"
+                      type="tel"
+                      component={Input}
+                      placeholder="1-800-867-5309"
+                    />
+
+                    <Field
+                      label="Emergency contact full name"
+                      name="emergencyContactName"
+                      component={Input}
+                      placeholder="Andrew Davis"
+                    />
+
+                    <Field
+                      label="Relation to emergency contact"
+                      name="emergencyContactRelation"
+                      component={Input}
+                      placeholder="mother, father, friend, etc..."
+                    />
+                  </fieldset>
 
                   <label className={classes.termsAndConditions}>
                     <div className={classes.inputLabel}>

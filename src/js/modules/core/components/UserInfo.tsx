@@ -14,7 +14,7 @@ interface Props {
 interface UserInfoStyles<T> extends Styles {
   UserInfo: T;
   greeting: T;
-  "@media (max-width: 800px)": T;
+  [s: string]: T;
 }
 
 const styles = (theme: Theme): UserInfoStyles<JssRules> => ({
@@ -36,10 +36,11 @@ const styles = (theme: Theme): UserInfoStyles<JssRules> => ({
   greeting: {
     maxWidth: "150px"
   },
-  "@media (max-width: 800px)": {
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     UserInfo: {
       bottom: "0",
-      top: "auto"
+      top: "auto",
+      borderRadius: "7% 0 0 0",
     }
   }
 });

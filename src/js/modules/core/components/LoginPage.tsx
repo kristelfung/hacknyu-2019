@@ -16,6 +16,8 @@ interface LoginPageStyles<T> extends Styles {
   form: T;
   registerLink: T;
   resetPasswordLink: T;
+  underline: T;
+  [s: string]: T;
 }
 
 interface Props {
@@ -40,6 +42,7 @@ const styles = (theme: Theme): LoginPageStyles<JssRules> => ({
     height: "100%",
     width: "100%",
     maxWidth: theme.containerSmallWidth,
+    minWidth: "500px",
     color: theme.secondFont,
     backgroundColor: theme.formBackground,
     paddingTop: "3em",
@@ -63,15 +66,20 @@ const styles = (theme: Theme): LoginPageStyles<JssRules> => ({
   underline: {
     border: "2px solid #6fb1f5",
     width: "2em"
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    LoginPage: {
+      minWidth: "0px"
+    }
   }
 });
 
 const validateLogin = values => {
   let errors: { email?: string; password?: string } = {};
-  if (values.email && values.email.length === 0) {
+  if (!values.email) {
     errors.email = "Email is required";
   }
-  if (values.password && values.password.length === 0) {
+  if (!values.password) {
     errors.password = "Password is required";
   }
   if (values.email && !emailRegex.test(values.email)) {

@@ -58,7 +58,7 @@ const initialState = {
   user: undefined,
   errors: {},
   notifications: {},
-  applyForm: { isSubmitting: false },
+  applyForm: { isSubmitting: false, formData: {} },
   loginForm: { isSubmitting: false },
   registerForm: { isSubmitting: false },
   resumeForm: { isSubmitting: false },
@@ -86,10 +86,14 @@ const reducer = (state = { ...initialState }, action) => {
     case UPLOAD_RESUME_FULFILLED:
       return {
         ...state,
+        applyForm: {
+          ...state.applyForm,
+          resumeTimestamp: action.payload.resumeTimestamp
+        },
         resumeForm: { isSubmitting: true },
         notifications: {
           ...state.notifications,
-          resume: action.payload
+          resume: action.payload.message
         }
       };
     case UPLOAD_RESUME_REJECTED:
@@ -111,7 +115,7 @@ const reducer = (state = { ...initialState }, action) => {
             ...state.applyForm,
             isSubmitting: false,
             formData,
-            submitTimestamp,
+            submitTimestamp
           },
           notifications: {
             ...state.notifications,
@@ -124,10 +128,10 @@ const reducer = (state = { ...initialState }, action) => {
         applyForm: {
           ...state.applyForm,
           isSubmitting: false,
-          formData,
+          formData
         },
-        notifications: {
-          ...state.notifications,
+        errors: {
+          ...state.errors,
           apply: message
         }
       };
@@ -201,8 +205,11 @@ const reducer = (state = { ...initialState }, action) => {
     case RESET_PASSWORD_FULFILLED:
       return {
         ...state,
-        passwordEmailSent: true,
-        resetPasswordForm: { isSubmitting: false }
+        resetPasswordForm: { isSubmitting: false },
+        notifications: {
+          ...state.notifications,
+          resetPassword: "Password reset email sent."
+        }
       };
     case RESET_PASSWORD_REJECTED:
       return {
@@ -210,7 +217,8 @@ const reducer = (state = { ...initialState }, action) => {
         errors: {
           ...state.errors,
           passwordEmail: action.payload.message,
-          resetPasswordForm: { isSubmitting: false }
+          resetPasswordForm: { isSubmitting: false },
+          errors: { ...state.errors, resetPassword: action.payload.message }
         }
       };
     case UPDATE_PASSWORD_PENDING:

@@ -27,18 +27,18 @@ const styles = (theme: Theme): HoverOverlayStyles<JssRules> => ({
     color: "white",
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     backgroundColor: theme.overlayColor
   },
   text: {
-    width: "150px"
+    width: "100px"
   }
 });
 
 const HoverOverlay: React.SFC<Props> = ({ classes, onClick }) => {
   return (
     <div className={classes.HoverOverlay} onClick={onClick}>
-      <div className={classes.text}>Upload your own photo</div>
+      <div className={classes.text}>Upload a new photo!</div>
     </div>
   );
 };

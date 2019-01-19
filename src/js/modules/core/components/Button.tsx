@@ -39,14 +39,17 @@ interface Props {
   type?: string;
   width?: string;
   onClick: () => any;
+  className: string;
 }
 
 const Button: React.SFC<Props & React.HTMLAttributes> = props => {
-  const { classes, children } = props;
+  const { classes, children, className } = props;
   return (
+    <div className={className}>
     <button {...props} className={`${classes.button} ${props.className}`}>
       {children}
     </button>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { ReactNode, ReactNodeArray } from "react";
 import { Styles } from "react-jss";
 import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules } from "../../types";
+import { JssRules, Theme } from "../../types";
 
 interface Props {
   id: number;
@@ -17,10 +17,10 @@ interface TrackStyles<T> extends Styles {
   subwayIcons: T;
   name: T;
   description: T;
-  "@media (max-width: 800px)": T;
+  [s: string]: T;
 }
 
-const styles: TrackStyles<JssRules> = {
+const styles = (theme: Theme): TrackStyles<JssRules> => ({
   Track: {
     display: "flex",
     flexDirection: "column",
@@ -38,12 +38,12 @@ const styles: TrackStyles<JssRules> = {
     padding: "0 25px 20px 25px",
     fontSize: "2rem"
   },
-  "@media (max-width: 800px)": {
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     description: {
       padding: "0"
     }
   }
-};
+});
 
 const Track: React.SFC<Props> = ({ id, classes, icons, children, name }) => {
   return (

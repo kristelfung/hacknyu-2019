@@ -24,15 +24,10 @@ interface State {
   isPasswordFormVisible: boolean;
 }
 
-const defaults = {
-  displayName: "Add your name to the application!",
-  photoURL: "/img/blank-profile.png"
-};
-
 const styles = (theme: Theme): ProfilePageStyles<JssRules> => ({
   ProfilePage: {
     width: "100%",
-    maxWidth: theme.containerWidth,
+    maxWidth: theme.containerMaxWidth,
     height: "100vh",
     paddingTop: "3em",
     display: "flex",
@@ -44,6 +39,21 @@ const styles = (theme: Theme): ProfilePageStyles<JssRules> => ({
   },
   name: {
     paddingBottom: "5%"
+  },
+  [`@media(max-width: ${theme.largeBreakpoint})`]: {
+    ProfilePage: {
+      width: theme.containerLargeWidth
+    }
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    ProfilePage: {
+      width: theme.containerMediumWidth
+    }
+  },
+  [`@media(max-width: ${theme.smallBreakpoint})`]: {
+    ProfilePage: {
+      width: theme.containerMobileWidth
+    }
   }
 });
 
@@ -63,15 +73,16 @@ class ProfilePage extends React.Component<Props, State> {
 
   render() {
     let { user, classes, application } = this.props;
-    const { firstName, lastName } = application;
     let userInfo = {
-      ...defaults,
-      ...user,
+      photoURL: user.photoURL || "/img/blank-profile.png",
+      displayName: user.displayName || "Add your name to the application!"
     };
 
-    if (firstName && lastName) {
+    if ("firstName" in application && "lastName" in application) {
+      const { firstName, lastName } = application;
       userInfo.displayName = `${firstName} ${lastName}`;
     }
+
     return (
       <div className={classes.ProfilePage}>
         <h1 className={classes.name}>

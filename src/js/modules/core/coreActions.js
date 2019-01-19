@@ -122,12 +122,12 @@ export const uploadResume = (uid, file) => dispatch => {
     return;
   }
 
+  const resumeTimestamp = new Date().toLocaleString();
   const storageRef = storage.ref();
   const resumeRef = storageRef.child(`users/${uid}/resume.pdf`);
   return resumeRef
     .put(file)
     .then(() => {
-      const resumeTimestamp = new Date().toLocaleString();
       return db
         .collection("users")
         .doc(uid)
@@ -137,7 +137,7 @@ export const uploadResume = (uid, file) => dispatch => {
     .then(timestamp => {
       dispatch({
         type: UPLOAD_RESUME_FULFILLED,
-        payload: "Resume successfully uploaded"
+        payload: { message: "Resume successfully uploaded", resumeTimestamp }
       });
 
       return timestamp;
@@ -160,7 +160,6 @@ export const submitApp = (appValues, incompleteFields) => dispatch => {
   let message, data;
   // If form is complete
   if (incompleteFields.length !== 0) {
-    // this a bit of a hack, but it works great! splits the incomplete field names (which are camel case) to human friendly strs
     const readify = list =>
       list
       .map(val => val.name)
@@ -293,6 +292,7 @@ export const resetPassword = email => dispatch => {
   auth
     .sendPasswordResetEmail(email)
     .then(result => {
+      dispatch(push("/"));
       dispatch({
         type: RESET_PASSWORD_FULFILLED,
         payload: result

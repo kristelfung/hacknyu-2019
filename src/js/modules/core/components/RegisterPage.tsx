@@ -10,11 +10,13 @@ import { emailRegex } from "../../constants";
 import { register } from "../coreActions";
 import Input from "./Input";
 import { Link } from "react-router-dom";
+import Underline from "./Underline";
 
 interface RegisterPageStyles<T> extends Styles {
   RegisterPage: T;
   loginLink: T;
   form: T;
+  [s: string]: T;
 };
 
 const styles = (theme: Theme): RegisterPageStyles<JssRules> => ({
@@ -41,9 +43,10 @@ const styles = (theme: Theme): RegisterPageStyles<JssRules> => ({
     padding: "20px",
     alignItems: "center"
   },
-  underline: {
-    border: "2px solid #6fb1f5",
-    width: "2em"
+  [`@media(max-width: ${theme.smallBreakpoint})`]: {
+    RegisterPage: {
+      maxWidth: theme.containerMobileWidth
+    }
   }
 });
 
@@ -70,7 +73,7 @@ const RegisterPage: React.SFC<Props> = ({
   return (
     <div className={classes.RegisterPage}>
       <h1> REGISTER </h1>
-      <hr className={classes.underline}></hr>
+      <Underline/>
       <Form
         onSubmit={handleSubmit}
         validate={values => {

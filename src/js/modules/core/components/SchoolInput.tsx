@@ -35,6 +35,7 @@ interface SchoolInputStyles<T> extends Styles {
   textField: T;
   Input: T;
   inputArea: T;
+  [s: string]: T;
 }
 
 const styles = (theme: Theme): SchoolInputStyles<JssRules> => ({
@@ -63,6 +64,11 @@ const styles = (theme: Theme): SchoolInputStyles<JssRules> => ({
   },
   inputArea: {
     display: "flex"
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    inputArea: {
+      flexDirection: "column"
+    }
   }
 });
 

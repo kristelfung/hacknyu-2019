@@ -6,24 +6,44 @@ We're using Firebase to store data and to do auth.
 
 ## Contributing
 
-To contribute, clone the repo and run
+To contribute, clone the repo and install the dependencies:
 
-    npm install
+```
+$ npm install
+```
 
- To build, run
+To run a local development server that rebuilds on changes:
 
-     npm run dev
+```
+$ npm run dev
+```
 
- The repo works with Node v10.11.0.
+## Deploying
 
- ## Roadmap
- Here's a list of TODOs
-  - Add documentation
-  - Fix Redux with TypeScript (remove @ts-ignore's)
-  - Finish hackathon application part
-  - Add god mode (organizer view)
-  - Rewrite in Rust
-  - Rewrite in Haskell
+Make sure you have the firebase CLI installed, then login to your Firebase account.
+```
+$ npm install -g firebase-tools
+$ firebase login
+```
+
+Build the production app:
+```
+$ npm run build
+```
+
+You will need to install dependencies and build the firebase functions (in `hacknyu/functions`):
+```
+$ npm install
+$ npm run build
+```
+
+Then deploy:
+```
+$ firebase deploy
+```
+
+Only deploy [hosting](https://firebase.google.com/docs/cli/#partial_deploys): `firebase deploy --only hosting`
+
   
 ## Contributors
 

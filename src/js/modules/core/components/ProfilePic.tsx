@@ -17,6 +17,7 @@ interface ProfilePicStyles<T> extends Styles {
 interface Props {
   classes: ProfilePicStyles<string>;
   uid: string;
+  photoURL: string;
   uploadProfilePic: (file: File, uid: string) => any;
 }
 

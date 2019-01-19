@@ -1,3 +1,5 @@
+const WebpackNotifierPlugin = require('webpack-notifier');
+
 module.exports = {
   mode: "development",
   entry: "./src/js/clientApp.jsx",
@@ -12,6 +14,7 @@ module.exports = {
       }
     ]
   },
+  plugins: [new WebpackNotifierPlugin({ alwaysNotify: true })],
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx"]
   }

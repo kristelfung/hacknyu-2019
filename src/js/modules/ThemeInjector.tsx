@@ -18,7 +18,8 @@ export const trackColors = {
 
 const theme: Theme = {
   backgroundColor: "#57068c",
-  secondBackground: "#fafafa",
+  secondBackground: "#f5f5f5",
+  secondBackgroundHighlight: "#fcfcfc",
   thirdBackground: "#57068c",
   fontColor: "#fefefe",
   secondFont: "#202020",
@@ -36,9 +37,15 @@ const theme: Theme = {
   errorBorder: "red",
   notificationBackground: "#fefefe",
   notificationBorder: "#000000",
-  containerWidth: "62.5em",
+  containerMobileWidth: "21em",
   containerSmallWidth: "28em",
+  containerMediumWidth: "40em",
+  containerLargeWidth: "45em",
+  containerMaxWidth: "62.5em",
   overlayColor: "#696969",
+  largeBreakpoint: "1100px",
+  mediumBreakpoint: "800px",
+  smallBreakpoint: "600px",
   ...trackColors
 };
 

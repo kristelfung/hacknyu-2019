@@ -1,7 +1,7 @@
 import * as React from "react";
 import Button from "./Button";
 import { Styles } from "react-jss";
-import { JssRules } from "../../types";
+import { JssRules, ReduxState, Theme } from "../../types";
 import injectSheet from "react-jss/lib/injectSheet";
 import { bindActionCreators, compose } from "redux";
 import { connect } from "react-redux";
@@ -12,15 +12,15 @@ interface UploadButtonStyles<T> extends Styles {
   hiddenInput: T;
   label: T;
   uploadedTime: T;
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: T;
 }
 
 interface Props {
   classes: UploadButtonStyles<string>;
-  setFormState: () => any;
   resumeTimestamp: string;
   uid: string;
 }
-const styles: UploadButtonStyles<JssRules> = {
+const styles = (theme: Theme): UploadButtonStyles<JssRules> => ({
   UploadResumeButton: {
     display: "flex",
     flexDirection: "row",
@@ -37,8 +37,13 @@ const styles: UploadButtonStyles<JssRules> = {
   },
   uploadedTime: {
     paddingLeft: "10px"
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    UploadResumeButton: {
+      flexDirection: "column"
+    }
   }
-};
+});
 
 class UploadResumeButton extends React.Component<Props> {
   fileUploader: React.Ref;
@@ -80,5 +85,8 @@ class UploadResumeButton extends React.Component<Props> {
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({ uploadResume }, dispatch)
+const mapStateToProps = (state: ReduxState) => ({
+  resumeTimestamp: state.core.applyForm.resumeTimestamp
+})
 
-export default compose(injectSheet(styles), connect(undefined, mapDispatchToProps))(UploadResumeButton);
+export default compose(injectSheet(styles), connect(mapStateToProps, mapDispatchToProps))(UploadResumeButton);

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Styles } from "react-jss";
-import { JssRules } from "../../types";
+import { JssRules, Theme } from "../../types";
 import injectSheet from "react-jss/lib/injectSheet";
 import { ReactNodeLike } from "prop-types";
 
 interface TimelineDescriptionStyles<T> extends Styles {
   TimelineDescription: T;
-  "@media (max-width: 800px)": T;
+  [s: string]: T;
 }
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
   left: string;
   top: string;
 }
-const styles: TimelineDescriptionStyles<JssRules> = {
+const styles = (theme: Theme): TimelineDescriptionStyles<JssRules> => ({
   TimelineDescription: {
     position: "absolute",
     display: "flex",
@@ -25,13 +25,13 @@ const styles: TimelineDescriptionStyles<JssRules> = {
     fontSize: "1.2em",
     left: props => props.left
   },
-  '@media (max-width: 800px)': {
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     TimelineDescription: {
       maxWidth: "45px",
       fontSize: "1em"
     }
   }
-};
+});
 
 
 const TimelineDescription: React.SFC<Props> = ({ classes, children }) => {

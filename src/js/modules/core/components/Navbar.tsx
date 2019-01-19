@@ -11,17 +11,18 @@ interface NavbarStyles<T> extends Styles {
   Navbar: T;
   link: T;
   links: T;
-  "@media (max-width: 800px)": T;
+  [p:string]: T;
 }
 const styles = (theme: Theme): NavbarStyles => ({
   Navbar: {
     height: "100%",
+    width: "100vw",
     display: "flex",
+    paddingLeft: "30px",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "flex-start",
-    width: "100%",
-    maxWidth: theme.containerWidth,
+    maxWidth: theme.containerMaxWidth,
   },
   link: {
     display: "flex",
@@ -38,18 +39,21 @@ const styles = (theme: Theme): NavbarStyles => ({
     },
   },
   links: {
-    width: "100%",
     height: "6.5em",
     display: "flex",
     alignItems: "center",
   },
-  "@media (max-width: 800px)": {
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     Navbar: {
       flexDirection: "column",
-      minHeight: "200px"
+      minHeight: "200px",
+      paddingLeft: "0px",
+    },
+    links: {
+      paddingLeft: "40px"
     },
     link: {
-      fontSize: "1em",
+      fontSize: "1.1em",
     }
   }
 });

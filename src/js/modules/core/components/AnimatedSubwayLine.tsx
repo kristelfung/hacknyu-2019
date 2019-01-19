@@ -20,14 +20,16 @@ class AnimatedSubwayLine extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     let stopOffsets = [];
-    for (let i = 0; i < STOPS_COUNT; i++) {
+    for (let i = 0; i < STOPS_COUNT - 1; i++) {
       stopOffsets.push(getRandomInteger(5) + 3);
     }
+    const lineOffset = getRandomInteger(5) + 3;
+    stopOffsets.push(lineOffset + 5);
     this.isMounted = true;
     this.state = {
       lineStep: 0,
       currentStop: 0,
-      lineOffset: getRandomInteger(5) + 3,
+      lineOffset,
       stopOffsets
     };
   }

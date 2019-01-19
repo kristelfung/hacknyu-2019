@@ -36,6 +36,7 @@ interface InputStyles<T> extends Styles {
   textField: T;
   Input: T;
   inputArea: T;
+  [s: string]: T;
 }
 
 const styles = (theme: Theme): InputStyles<JssRules> => ({
@@ -67,7 +68,20 @@ const styles = (theme: Theme): InputStyles<JssRules> => ({
   },
   inputArea: {
     display: "flex"
-  }
+  },
+  [`@media(max-width: ${theme.largeBreakpoint})`]: {
+    Input: {
+      width: "12em"
+    }
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    Input: {
+      width: "10em"
+    },
+    inputArea: {
+      flexDirection: "column"
+    },
+  },
 });
 
 const Input: React.SFC<Props> = ({ component, classes, meta, input, label, ...props }) => {
