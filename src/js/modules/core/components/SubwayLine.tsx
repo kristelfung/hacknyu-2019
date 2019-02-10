@@ -1,37 +1,30 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, { WithStyles } from "react-jss";
 import SubwayStop from "./SubwayStop";
 import { STOPS_COUNT } from "../../constants";
-import { JssRules } from "../../types";
 
-interface SubwayLineStyles<T> extends Styles {
-  SubwayLine: T;
-}
-
-interface SubwayLineProps {
+interface Props extends WithStyles<typeof styles> {
   color: string;
   lineStep: number;
   stopOffsets: number[];
   lineOffset: number;
   currentStop: number;
-  classes: SubwayLineStyles<string>;
 }
 
-const styles: SubwayLineStyles<JssRules> = {
+const styles = {
   SubwayLine: {
     height: "15px",
-    width: props =>
+    width: (props: Props) =>
       `${props.lineStep * (100 / STOPS_COUNT)}vw`,
     transition: "width 1s",
     margin: "10px 0px 10px 0px",
     borderRadius: "10%",
     position: "relative",
-    backgroundColor: props => props.color
+    backgroundColor: (props: Props) => props.color
   }
 };
 
-const SubwayLine: React.SFC<SubwayLineProps> = ({
+const SubwayLine: React.FunctionComponent<Props> = ({
   classes,
   currentStop,
   stopOffsets

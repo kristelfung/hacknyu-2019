@@ -1,19 +1,13 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import injectSheet, { Styles } from "react-jss";
+import injectSheet, { WithStyles } from "react-jss";
 import { Link } from "react-router-dom";
-// @ts-ignore
-import { loginWithGoogle, logout } from "../coreActions";
+import { logout } from "../coreActions";
 import { User } from "firebase";
-import { Theme } from "../../types";
+import { Theme } from "../../ThemeInjector";
+import { IS_REGISTRATION_OPEN } from "../../constants";
 
-interface NavbarStyles<T> extends Styles {
-  Navbar: T;
-  link: T;
-  links: T;
-  [p:string]: T;
-}
-const styles = (theme: Theme): NavbarStyles => ({
+const styles = (theme: Theme) => ({
   Navbar: {
     height: "100%",
     width: "100vw",
@@ -32,41 +26,41 @@ const styles = (theme: Theme): NavbarStyles => ({
     marginRight: "1em",
     color: theme.fontColor,
     "&:hover": {
-      textDecoration: "underline",
+      textDecoration: "underline"
     },
     "&:active": {
-      textDecoration: "underline",
+      textDecoration: "underline"
     },
   },
   links: {
     height: "6.5em",
     display: "flex",
     alignItems: "center",
+    flexFlow: "row wrap"
   },
   [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     Navbar: {
       flexDirection: "column",
       minHeight: "200px",
-      paddingLeft: "0px",
+      paddingLeft: "0px"
     },
     links: {
       paddingLeft: "40px"
     },
     link: {
-      fontSize: "1.1em",
+      fontSize: "1.1em"
     }
   }
 });
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   user: User;
   error: string;
   viewportWidth: number;
   logout: () => any;
 }
 
-const Navbar: React.SFC<Props> = ({ classes, user, logout }) => {
+const Navbar: React.FunctionComponent<Props> = ({ classes, user, logout }) => {
   return (
     <div className={classes.Navbar}>
       <div className={classes.links}>
@@ -85,16 +79,13 @@ const Navbar: React.SFC<Props> = ({ classes, user, logout }) => {
               LOGOUT
             </a>
           ]
-          ) : (
-          [
+          ) : ([
             <Link to="/login" className={classes.link}>
               LOGIN
             </Link>,
-            <Link to="/register" className={classes.link}>
-              REGISTER
-            </Link>
-          ]
-        )}
+            (IS_REGISTRATION_OPEN && <Link to="/register" className={classes.link}> REGISTER </Link>)
+          ])
+        }
       </div>
     </div>
   );

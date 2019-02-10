@@ -78,7 +78,7 @@ let startServer = server => {
     appName = require("./package.json").displayName,
     protocol = SSL.HTTPS ? "https" : "http";
 
-  host = host == "0.0.0.0" || host == "::" ? "localhost" : host;
+  host = host === "0.0.0.0" || host === "::" ? "localhost" : host;
 
   console.log(
     "%s ".white + "[v%s] %s",

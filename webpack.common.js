@@ -2,15 +2,13 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 
 module.exports = {
   mode: "development",
-  entry: "./src/js/clientApp.jsx",
+  entry: "./src/js/clientApp.tsx",
   module: {
     rules: [
       {
         test: /\.(jsx?$)|(tsx?$)/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: "babel-loader"
-        }
+        loader: "ts-loader",
       }
     ]
   },

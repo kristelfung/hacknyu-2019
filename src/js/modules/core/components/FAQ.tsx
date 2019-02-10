@@ -1,18 +1,9 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, {WithStyles} from "react-jss";
 import Underline from "./Underline";
+import { Theme } from "../../ThemeInjector";
 
-interface FAQStyles<T> extends Styles {
-  FAQ: T;
-  questions: T;
-  question: T;
-  additionalQuestions: T;
-  [p: string]: T;
-}
-
-const styles = (theme: Theme): FAQStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   FAQ: {
     backgroundColor: theme.backgroundColor,
     display: "flex",
@@ -35,6 +26,10 @@ const styles = (theme: Theme): FAQStyles<JssRules> => ({
   additionalQuestions: {
     fontSize: "1.1em"
   },
+  link: {
+    color: theme.fontColor,
+    textDecoration: "underline"
+  },
   [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     questions: {
       gridTemplateColumns: "50% 50%"
@@ -48,7 +43,9 @@ const styles = (theme: Theme): FAQStyles<JssRules> => ({
   }
 });
 
-const FAQ = ({ classes }) => {
+type Props = WithStyles<typeof styles>;
+
+const FAQ: React.FunctionComponent<Props> = ({ classes }) => {
   return (
     <div className={classes.FAQ}>
       <h1> Questions </h1>
@@ -70,14 +67,20 @@ const FAQ = ({ classes }) => {
           </p>
         </div>
         <div className={classes.question}>
-          <h2> Where is it?</h2>
+          <h2> Where and when is it?</h2>
           <p>
             HackNYU takes place on NYU campuses in New York, Abu Dhabi, and
-            Shanghai. The New York event is hosted at the NYU Tandon School of
-            Engineering, 6 MetroTech Center, Brooklyn, NY 11201, which is easily
+            Shanghai. The New York event is hosted at the 
+            <a className={classes.link} href="https://goo.gl/maps/BnPFgbb9irv"> NYU Tandon School of
+            Engineering, 6 MetroTech Center, Brooklyn, NY 11201</a>, which is easily
             accessible via NYC's public transportation. Students enrolled in NYU
             Shanghai and NYU Abu Dhabi can participate in the event on their
             respective campuses.
+          </p>
+          <p>
+            Unfortunately, we cannot provide free parking, but there are several parking 
+            garages in the surrounding area that are available for daily rates. 
+            When possible, we recommend using public transportation.
           </p>
         </div>
         <div className={classes.question}>
@@ -132,7 +135,7 @@ const FAQ = ({ classes }) => {
         <div className={classes.question}>
           <h2> What about teams? </h2>
           <p>
-            Teams are limited to 4 people. You do NOT have to come with a team
+            Teams are limited to 5 people. You do NOT have to come with a team
             to the hackathon. There will be a place where hackers can form teams
             and brainstorm ideas.
           </p>

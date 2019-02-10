@@ -1,27 +1,25 @@
 import * as React from "react"
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 
-interface TimelineTrackStyles<T> extends Styles {
-  TimelineTrack: T;
-}
 
-interface Props {
-  classes: TimelineTrackStyles<string>
-}
-
-const styles: TimelineTrackStyles<JssRules> = {
+const styles = {
   TimelineTrack: {
-    backgroundColor: props => props.color,
+    backgroundColor: (props: Props) => props.color,
     height: "10px",
-    width: props => props.width,
+    width: (props: Props) => props.width,
   }
+};
+
+interface Props extends WithStyles<typeof styles> {
+  width: string;
+  color: string;
 }
-const TimelineTrack: React.SFC<Props> = ({ classes }) => {
+
+
+const TimelineTrack: React.FunctionComponent<Props> = ({ classes }) => {
   return (
     <div className={classes.TimelineTrack} />
   )
-}
+};
 
 export default injectSheet(styles)(TimelineTrack)

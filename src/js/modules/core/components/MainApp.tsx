@@ -1,10 +1,9 @@
 import * as React from "react";
 import { ReactNode } from "react";
-import injectSheet, { Styles } from "react-jss";
+import injectSheet, { WithStyles } from "react-jss";
 import { withRouter } from "react-router-dom";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { LoadingStates, ReduxState, Theme } from "../../types";
 // @ts-ignore
 import { loadInitialState, refreshWindowDimensions } from "../coreActions";
 import Header from "./Navbar";
@@ -14,28 +13,22 @@ import UserInfo from "./UserInfo";
 import Alerts from "./Alerts";
 import LoadingIcon from "./LoadingIcon";
 import ErrorPage from "./ErrorPage";
+import { Theme } from "../../ThemeInjector";
+import { ReduxState } from "../../../reducers";
+import { LoadingStates } from "../coreReducer";
 
-interface MainAppStyles<T> extends Styles {
-  MainApp: T;
-  loadingScreen: T;
-  loadingIcon: T;
-  loadingText: T;
-  banner: T;
-  bannerImg: T;
-}
-
-interface Props {
-  classes: MainAppStyles<string>;
+interface Props extends WithStyles<typeof styles> {
   children: ReactNode;
   location: Location;
   user: User;
   addUser: (u: User) => any;
   deleteUser: () => any;
   onResizeWindow: () => any;
+  loadInitialState: (location: Location) => any;
   loadingState: LoadingStates
 }
 
-const styles = (theme: Theme): MainAppStyles<object> => ({
+const styles = (theme: Theme) => ({
   MainApp: {
     backgroundColor: theme.backgroundColor,
     color: theme.fontColor,
@@ -73,7 +66,7 @@ const styles = (theme: Theme): MainAppStyles<object> => ({
     minWidth: "60px",
     position: "fixed",
     right: "50px",
-    top: "0", 
+    top: "0",
     width: "10%",
     zIndex: "10000",
   },
@@ -138,16 +131,16 @@ class MainApp extends React.Component<Props> {
       <div className={classes.MainApp}>
         <Alerts />
         <Header />
-        <a id="mlh-trust-badge" 
-          className={classes.banner} 
-          href="https://mlh.io/seasons/na-2019/events?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2019-season&utm_content=white" 
+        <a id="mlh-trust-badge"
+          className={classes.banner}
+          href="https://mlh.io/seasons/na-2019/events?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2019-season&utm_content=white"
           target="_blank">
-          <img src="https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg" 
-            alt="Major League Hacking 2019 Hackathon Season" 
+          <img src="https://s3.amazonaws.com/logged-assets/trust-badge/2019/mlh-trust-badge-2019-white.svg"
+            alt="Major League Hacking 2019 Hackathon Season"
             className={classes.bannerImg}/>
         </a>
         {children}
-        <Footer />
+        <Footer/>
       </div>
     );
   }

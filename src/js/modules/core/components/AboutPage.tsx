@@ -1,23 +1,17 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faReact } from "@fortawesome/free-brands-svg-icons/faReact";
-import { JssRules, Theme } from "../../types";
 import { faAws } from "@fortawesome/free-brands-svg-icons/faAws";
 import Underline from "./Underline";
 import { Link } from "react-router-dom";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { User } from "firebase";
+import injectSheet, { WithStyles } from "react-jss";
+import { ReduxState } from "../../../reducers";
+import { Theme } from "../../ThemeInjector";
 
-interface AboutPageStyles<T> extends Styles {
-  AboutPage: T;
-  icons: T;
-  text: T;
-  title: T;
-}
-
-const styles = (theme: Theme): AboutPageStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   AboutPage: {
     backgroundColor: theme.secondBackground,
     color: theme.secondFont,
@@ -64,12 +58,12 @@ const styles = (theme: Theme): AboutPageStyles<JssRules> => ({
   }
 });
 
-interface Props {
-  classes: { [s: string]: string };
+
+interface Props extends WithStyles<typeof styles> {
   user: User;
 }
 
-const AboutPage: React.SFC<Props> = ({ classes, user }) => {
+const AboutPage: React.FunctionComponent<Props> = ({ classes, user }) => {
   return (
     <div className={classes.AboutPage}>
       <h1 className={classes.title}> About HackNYU </h1>
@@ -110,7 +104,7 @@ const AboutPage: React.SFC<Props> = ({ classes, user }) => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ReduxState) => ({
   user: state.core.user
 })
 

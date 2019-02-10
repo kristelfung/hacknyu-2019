@@ -1,30 +1,27 @@
 import * as React from "react";
-import injectSheet from "react-jss/lib/injectSheet";
-import { Styles } from "jss";
+import injectSheet, { WithStyles} from "react-jss";
 import { User } from "firebase";
-import { bindActionCreators, compose } from "redux";
+import { bindActionCreators, compose, Dispatch } from "redux";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
-import { JssRules, Theme } from "../../types";
 import Button from "./Button";
 import PasswordForm from "./UpdatePasswordForm";
 import ProfilePic from "./ProfilePic";
+import { Theme } from "../../ThemeInjector";
+import { ApplyFormData } from "../../types";
+import { ReduxState } from "../../../reducers";
+import { Link } from "react-router-dom";
 
-interface ProfilePageStyles<T> extends Styles {
-  ProfilePage: T;
-  name: T;
-}
-
-interface Props {
-  classes: ProfilePageStyles<string>;
+interface Props extends WithStyles<typeof styles> {
   user: User;
+  application: ApplyFormData
 }
 
 interface State {
   isPasswordFormVisible: boolean;
 }
 
-const styles = (theme: Theme): ProfilePageStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   ProfilePage: {
     width: "100%",
     maxWidth: theme.containerMaxWidth,
@@ -58,12 +55,11 @@ const styles = (theme: Theme): ProfilePageStyles<JssRules> => ({
 });
 
 class ProfilePage extends React.Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       isPasswordFormVisible: false
     };
-    this.fileUploader = React.createRef();
   }
 
   togglePasswordForm = () => {
@@ -91,17 +87,18 @@ class ProfilePage extends React.Component<Props, State> {
         <ProfilePic photoURL={userInfo.photoURL} uid={user.uid}/>
         <Button onClick={this.togglePasswordForm}>CHANGE PASSWORD</Button>
         {this.state.isPasswordFormVisible && <PasswordForm />}
+        <Link to="/status"><Button> ADMISSION STATUS </Button></Link>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ReduxState) => ({
   user: state.core.user,
   application: state.core.applyForm.formData
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ push }, dispatch);
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({ push }, dispatch);
 
 export default compose(
   injectSheet(styles),

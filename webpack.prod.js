@@ -9,6 +9,7 @@ module.exports = merge(common, {
     new CopyWebpackPlugin([
       { from: "dist/dev/css", to: "css" },
       { from: "dist/dev/img", to: "img" },
+      { from: "dist/dev/pdf", to: "pdf" },
       { from: "dist/dev/index.html", to: "index.html" },
       { from: "dist/dev/favicon.ico", to: "" }
     ])

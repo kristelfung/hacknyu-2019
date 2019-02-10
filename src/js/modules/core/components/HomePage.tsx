@@ -1,32 +1,18 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 import Hero from "./Hero";
 import TrackInfo from "./TrackInfo";
 import AboutSection from "./AboutSection";
 import Timeline from "./Timeline";
 import AnimatedSubwayLines from "./AnimatedSubwayLines";
 import FAQ from "./FAQ";
+import { Theme } from "../../ThemeInjector";
+import SponsorshipSection from "./SponsorshipSection";
+import Schedule from "./Schedule";
 
-interface HomePageStyles<T> extends Styles {
-  HomePage: T;
-  aboutSection: T;
-  timelineSection: T;
-  tracksSection: T;
-  faqSection: T;
-  curvedTop: T;
-  info: T;
-}
+type Props = WithStyles<typeof styles>;
 
-interface Props {
-  classes: HomePageStyles<string>;
-  viewportWidth: number;
-}
-interface State {
-  activeBlocks: number;
-}
-
-const styles = (theme: Theme): HomePageStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   HomePage: {
     display: "flex",
     flexDirection: "column",
@@ -58,6 +44,14 @@ const styles = (theme: Theme): HomePageStyles<JssRules> => ({
     backgroundColor: theme.secondBackground,
     color: theme.fontColor
   },
+  scheduleSection: {
+    backgroundColor: theme.secondBackground,
+    color: theme.secondFont
+  },
+  sponsorshipSection: {
+    backgroundColor: theme.secondBackground,
+    color: theme.secondFont
+  },
   curvedTop: {
     width: "100vw",
     transform: "translateY(0.75vh)"
@@ -66,38 +60,34 @@ const styles = (theme: Theme): HomePageStyles<JssRules> => ({
     display: "flex",
     width: "100vw",
     flexDirection: "column"
-  },
+  }
 });
 
-class HomePage extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  render() {
-    let { classes } = this.props;
-    return (
-      <div className={classes.HomePage}>
-        <Hero />
-        <AnimatedSubwayLines/>
-        <div className={classes.info}>
-          <div className={classes.aboutSection}>
-            <AboutSection />
-          </div>
-          <div className={classes.timelineSection}>
-            <Timeline/>
-          </div>
-          <div className={classes.tracksSection}>
-            <TrackInfo />
-          </div>
-          <div className={classes.faqSection}>
-            <img className={classes.curvedTop} src="/img/semicircle.svg" />
-            <FAQ />
-          </div>
+const HomePage: React.FunctionComponent<Props> = ({ classes }) => {
+  return (
+    <div className={classes.HomePage}>
+      <Hero />
+      <AnimatedSubwayLines />
+      <div className={classes.info}>
+        <div className={classes.aboutSection}>
+          <AboutSection />
+        </div>
+        <div className={classes.tracksSection}>
+          <TrackInfo />
+        </div>
+        <div className={classes.scheduleSection}>
+          <Schedule />
+        </div>
+        <div className={classes.faqSection}>
+          <img className={classes.curvedTop} src="/img/semicircle.svg" />
+          <FAQ />
+        </div>
+        <div className={classes.sponsorshipSection}>
+          <SponsorshipSection />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default injectSheet(styles)(HomePage);

@@ -1,19 +1,11 @@
 import * as React from "react";
 import AnimatedSubwayLine from "./AnimatedSubwayLine";
 import { trackColors } from "../../ThemeInjector";
-import { Styles } from "react-jss";
-import { JssRules } from "../../types";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, { WithStyles } from "react-jss";
 
-interface AnimatedSubwayLinesStyles<T> extends Styles {
-  AnimatedSubwayLines: T;
-}
+type Props = WithStyles<typeof styles>;
 
-interface Props {
-  classes: AnimatedSubwayLinesStyles<string>;
-}
-
-const styles: AnimatedSubwayLinesStyles<JssRules> = {
+const styles = {
   AnimatedSubwayLines: {
     display: "flex",
     minHeight: "300px",
@@ -25,7 +17,7 @@ const styles: AnimatedSubwayLinesStyles<JssRules> = {
   }
 };
 
-const AnimatedSubwayLines: React.SFC<Props> = ({ classes }) => {
+const AnimatedSubwayLines: React.FunctionComponent<Props> = ({ classes }) => {
   return (
     <div className={classes.AnimatedSubwayLines}>
       <AnimatedSubwayLine color={trackColors.green} />

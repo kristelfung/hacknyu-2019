@@ -1,6 +1,5 @@
 import * as React from "react";
 import { delay } from "../../utils";
-import { clearError, clearNotification } from "../coreActions";
 import Notification from "./Alert";
 import { ALERT_TIME_INTERVALS } from "../../constants";
 
@@ -9,6 +8,7 @@ export enum States {
   Mounted,
   Unmounting
 }
+
 
 interface Props {
   message: string;
@@ -22,7 +22,7 @@ interface State {
 }
 
 class AnimatedAlert extends React.Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       componentState: States.Mounting

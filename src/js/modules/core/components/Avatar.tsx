@@ -1,12 +1,9 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss";
+import injectSheet, { WithStyles } from "react-jss";
 import { User } from "firebase";
 
-interface AvatarStyles extends Styles {
-  Avatar: object;
-}
 
-const styles: AvatarStyles = {
+const styles = {
   Avatar: {
     width: "50px",
     height: "50px",
@@ -16,13 +13,12 @@ const styles: AvatarStyles = {
   },
 };
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   user: User;
 }
 
 // Earth Water Fire Air
-const Avatar: React.SFC<Props> = ({ classes, user }) => {
+const Avatar: React.FunctionComponent<Props> = ({ classes, user }) => {
   const url = user.photoURL || "/img/blank-profile.png";
   return <img className={classes.Avatar} src={url} />;
 };

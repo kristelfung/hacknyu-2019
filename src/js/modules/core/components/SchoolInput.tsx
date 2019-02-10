@@ -1,44 +1,16 @@
 import * as React from "react";
+import * as Autocomplete from "react-autocomplete";
+import injectSheet, { WithStyles } from "react-jss";
+import { Theme } from "../../ThemeInjector";
+import { ChangeEvent, CSSProperties } from "react";
+import { FieldRenderProps } from "react-final-form"
 
-import Autocomplete from "react-autocomplete";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
-
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   schools: string[];
-  classes: { [s: string]: string };
-  input: object;
   label: string;
-  meta: Partial<{
-    // Idk why, but react-final-form doesn't export this as a type
-    active: boolean;
-    data: object;
-    dirty: boolean;
-    dirtySinceLastSubmit: boolean;
-    error: any;
-    initial: any;
-    invalid: boolean;
-    pristine: boolean;
-    submitError: any;
-    submitFailed: boolean;
-    submitSucceeded: boolean;
-    submitting: boolean;
-    touched: boolean;
-    valid: boolean;
-    visited: boolean;
-  }>;
 }
 
-interface SchoolInputStyles<T> extends Styles {
-  label: T;
-  error: T;
-  textField: T;
-  Input: T;
-  inputArea: T;
-  [s: string]: T;
-}
-
-const styles = (theme: Theme): SchoolInputStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   label: {
     padding: "5px",
     width: "150px"
@@ -80,22 +52,22 @@ const menuStyle = {
   fontSize: "90%",
   top: "50px", // height of your input
   left: 0,
-  position: "absolute",
+  position: "absolute" as "absolute",
   overflow: "auto",
   width: "100%",
   zIndex: 1000
 };
 
-const wrapperStyle = {
+const wrapperStyle: CSSProperties = {
   display: "inline-block",
-  position: "relative"
+  position: "relative" as "relative"
 };
 
-const isUpper = str => str === str.toUpperCase();
+const isUpper = (str: string): boolean => str === str.toUpperCase();
 
 // given an autocomplete item and a input value, should we display the autocomplete
 // item?
-const doesStringMatch = (item, value) => {
+const doesStringMatch = (item: string, value: string): boolean => {
   if (value !== "") {
     // if input value is all uppercase, try to compare with the acronym of the autocomplete items
     if (isUpper(value)) {
@@ -103,7 +75,7 @@ const doesStringMatch = (item, value) => {
         .split(" ")
         .filter(word => isUpper(word[0]) && word !== "The");
       const capLetters = importantWords.map(word => word[0]);
-      const chars = [...value];
+      const chars: string = value.slice(0);
 
       for (let i = 0; i < chars.length; i++) {
         if (capLetters[i] !== chars[i]) {
@@ -123,27 +95,36 @@ const doesStringMatch = (item, value) => {
 };
 
 // School input with autocomplete form of schools
-const SchoolInput: React.SFC<Props> = ({ meta, schools, input, classes, label }) => {
+const SchoolInput: React.FunctionComponent<Props & FieldRenderProps> = ({
+  meta,
+  schools,
+  input,
+  classes,
+  label
+}) => {
   return (
     <div className={classes.Input}>
       <div className={classes.inputArea}>
         <div className={classes.label}>{label} </div>
         <Autocomplete
           {...input}
-          renderInput={props => <input {...props} className={classes.textField} />}
+          renderInput={props => (
+            <input {...props} className={classes.textField} />
+          )}
           getItemValue={item => item}
           items={schools}
           shouldItemRender={doesStringMatch}
           renderItem={(item, isHighlighted) => (
             <div
               style={{ background: isHighlighted ? "lightgray" : "white" }}
-              className={classes.autocompleteItem}
             >
               {item}
             </div>
           )}
-          onChange={val => input.onChange(val)}
-          onSelect={val => input.onChange(val)}
+          onChange={(e: ChangeEvent<HTMLInputElement>, val: string) =>
+            input.onChange(val)
+          }
+          onSelect={(val: string) => input.onChange(val)}
           menuStyle={menuStyle}
           wrapperStyle={wrapperStyle}
         />

@@ -1,12 +1,9 @@
 import * as React from "react";
 import { ThemeProvider } from "theming";
-import { Theme } from "./types";
-import { withRouter } from "react-router";
-import { Location } from "history";
+import { ReactNodeLike } from "prop-types";
 
 interface Props {
-  location: Location;
-  children: any;
+  children: ReactNodeLike;
 }
 
 export const trackColors = {
@@ -15,6 +12,47 @@ export const trackColors = {
   green: "#619b5b",
   blue: "#63a0c6"
 };
+
+export interface Theme {
+  backgroundColor: string;
+  secondBackground: string;
+  secondBackgroundHighlight: string;
+  thirdBackground: string;
+  fontColor: string;
+  secondFont: string;
+  secondFontHover: string;
+  highlightColor: string;
+  highlightColorHover: string;
+  formBackground: string;
+  submitButton: string;
+  submitButtonHover: string;
+  submitButtonDeactivated: string;
+  errorBorder: string;
+  errorText: string;
+  errorBackground: string;
+  notificationBackground: string;
+  notificationBorder: string;
+  overlayColor: string;
+  fontFamily: string;
+  inputPadding: string;
+  red: string;
+  green: string;
+  blue: string;
+  orange: string;
+  containerMaxWidth: string;
+  containerMobileWidth: string;
+  containerSmallWidth: string;
+  containerMediumWidth: string;
+  containerLargeWidth: string;
+  largeBreakpoint: string;
+  mediumBreakpoint: string;
+  smallBreakpoint: string;
+  mobileBreakpoint: string;
+  bodyLineHeight: string;
+  bodyFontSize: string;
+  titleFontSize: string;
+  formElementMaxWidth: string;
+}
 
 const theme: Theme = {
   backgroundColor: "#57068c",
@@ -29,7 +67,7 @@ const theme: Theme = {
   formBackground: "#fafafa",
   submitButton: "#9c68b1",
   submitButtonHover: "#b773cd",
-  submitButtonDeactivated: "#c193cd",
+  submitButtonDeactivated: "#D2AFDB",
   fontFamily: "mr-eaves-xl-modern, sans-serif",
   inputPadding: "7px 10px",
   errorText: "#444444",
@@ -37,15 +75,20 @@ const theme: Theme = {
   errorBorder: "red",
   notificationBackground: "#fefefe",
   notificationBorder: "#000000",
-  containerMobileWidth: "21em",
-  containerSmallWidth: "28em",
+  containerMobileWidth: "18em",
+  containerSmallWidth: "21em",
   containerMediumWidth: "40em",
   containerLargeWidth: "45em",
-  containerMaxWidth: "62.5em",
+  containerMaxWidth: "62.5rem",
   overlayColor: "#696969",
   largeBreakpoint: "1100px",
   mediumBreakpoint: "800px",
   smallBreakpoint: "600px",
+  mobileBreakpoint: "500px",
+  bodyFontSize: "1.3rem",
+  titleFontSize: "2em",
+  bodyLineHeight: "1.2",
+  formElementMaxWidth: "500px",
   ...trackColors
 };
 
@@ -56,5 +99,4 @@ class ThemeInjector extends React.Component<Props> {
   }
 }
 
-// @ts-ignore
-export default withRouter(ThemeInjector);
+export default ThemeInjector;

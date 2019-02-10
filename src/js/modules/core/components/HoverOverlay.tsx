@@ -1,18 +1,14 @@
 import * as React from "react";
-import { JssRules, Theme } from "../../types";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, {  WithStyles } from "react-jss";
+import { Theme } from "../../ThemeInjector";
+import { SyntheticEvent } from "react";
 
-interface HoverOverlayStyles<T> extends Styles {
-  HoverOverlay: T;
-  text: T;
+interface Props extends WithStyles<typeof styles> {
+  isHovering: boolean;
+  onClick: (e: SyntheticEvent<HTMLDivElement>) => void;
 }
 
-interface Props {
-  classes: HoverOverlayStyles<string>
-}
-
-const styles = (theme: Theme): HoverOverlayStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   HoverOverlay: {
     position: "absolute",
     top: "100px",
@@ -22,7 +18,7 @@ const styles = (theme: Theme): HoverOverlayStyles<JssRules> => ({
     borderBottomLeftRadius: "100px",
     borderBottomRightRadius: "100px",
     fontSize: "1.1em",
-    opacity: props => props.isHovering ? "1" : "0",
+    opacity: (props: Props) => props.isHovering ? "1" : "0",
     transition: "opacity 0.3s",
     color: "white",
     display: "flex",
@@ -35,7 +31,7 @@ const styles = (theme: Theme): HoverOverlayStyles<JssRules> => ({
   }
 });
 
-const HoverOverlay: React.SFC<Props> = ({ classes, onClick }) => {
+const HoverOverlay: React.FunctionComponent<Props> = ({ classes, onClick }) => {
   return (
     <div className={classes.HoverOverlay} onClick={onClick}>
       <div className={classes.text}>Upload a new photo!</div>

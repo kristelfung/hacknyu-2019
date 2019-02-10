@@ -1,26 +1,20 @@
 import * as React from "react";
-import { Styles } from "react-jss";
 import { ReactNode } from "react";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 
-interface SubwayIconStyles<T> extends Styles {
-  SubwayIcon: T;
-}
-
-interface Props {
+interface Props extends WithStyles<typeof styles> {
+  key: number;
   color: string;
   radius: number;
   children: ReactNode;
-  classes: SubwayIconStyles<string>;
 }
 
-const styles: SubwayIconStyles<JssRules> = {
+const styles = {
   SubwayIcon: {
-    backgroundColor: props => props.color,
+    backgroundColor: (props: Props) => props.color,
     fontFamily: "Helvetica, sans-serif",
-    width: props => props.radius * 2,
-    height: props => props.radius * 2,
+    width: (props: Props) => props.radius * 2,
+    height: (props: Props) => props.radius * 2,
     padding: "0",
     borderRadius: "80px",
     fontSize: "1.3em",
@@ -39,7 +33,7 @@ const styles: SubwayIconStyles<JssRules> = {
   }
 };
 
-const SubwayIcon: React.SFC<Props> = ({ classes, children }) => {
+const SubwayIcon: React.FunctionComponent<Props> = ({ classes, children }) => {
   return <div className={classes.SubwayIcon}>{children}</div>;
 };
 

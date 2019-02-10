@@ -1,5 +1,5 @@
 // src/firebase.js
-import firebase from "firebase/app";
+import * as firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
@@ -17,7 +17,7 @@ firebase.initializeApp(config);
 firebase
   .auth()
   .setPersistence("local")
-  .catch(err => {
+  .catch((err: string) => {
     console.error(err);
   });
 const firestore = firebase.firestore();

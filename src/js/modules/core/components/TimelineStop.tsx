@@ -1,33 +1,27 @@
 import * as React from "react"
-import { Styles } from "react-jss";
-import { JssRules } from "../../types";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, { WithStyles } from "react-jss";
 
-interface TimelineStopStyles<T> extends Styles {
-  TimelineStop: T;
-}
 
-interface Props {
-  classes: TimelineStopStyles<string>
+interface Props extends WithStyles<typeof styles> {
   color: string;
   left: string;
   top: string;
 }
 
-const styles: TimelineStopStyles<JssRules> = {
+const styles = {
   TimelineStop: {
     position: "absolute",
-    left: props => props.left,
-    top: props => props.top,
+    left: (props: Props) => props.left,
+    top: (props: Props) => props.top,
     height: "19px",
     width: "19px",
     borderRadius: "50%",
-    backgroundColor: props => props.color,
+    backgroundColor: (props: Props) => props.color,
     border: "3px solid black"
   }
 }
 
-const TimelineStop = ({ classes }) => {
+const TimelineStop: React.FunctionComponent<Props> = ({ classes }) => {
   return (
     <div className={classes.TimelineStop} />
   )

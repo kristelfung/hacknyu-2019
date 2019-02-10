@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["es6"],
+    "lib": ["es2015", "esnext.asynciterable", "es2017", "dom"],
+    "jsx": "react",
     "module": "commonjs",
     "noImplicitReturns": true,
     "outDir": "lib",
@@ -9,7 +10,5 @@
     "types": []
   },
   "compileOnSave": true,
-  "files": [
-    "src/index.ts"
-  ]
+  "files": ["src/index.ts", "src/server.ts"]
 }

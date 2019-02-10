@@ -1,24 +1,13 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import { JssRules, Theme } from "../../types";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, {  WithStyles } from "react-jss";
 import TimelineStop from "./TimelineStop";
-import { trackColors } from "../../ThemeInjector";
+import { Theme, trackColors } from "../../ThemeInjector";
 import TimelineTrack from "./TimelineTrack";
 import TimelineDescription from "./TimelineDescription";
 
-interface TimelineStyles<T> extends Styles {
-  Timeline: T;
-  descriptions: T;
-  trackContainer: T;
-  [s: string]: T;
-}
+type Props = WithStyles<typeof styles>;
 
-interface Props {
-  classes: TimelineStyles<string>;
-}
-
-const styles = (theme: Theme): TimelineStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   Timeline: {
     display: "flex",
     flexDirection: "column",
@@ -44,7 +33,7 @@ const styles = (theme: Theme): TimelineStyles<JssRules> => ({
   }
 });
 
-const Timeline: React.SFC<Props> = ({ classes }) => {
+const Timeline: React.FunctionComponent<Props> = ({ classes }) => {
   return (
     <div className={classes.Timeline}>
       <h1 className={classes.title}>TIMELINE</h1>

@@ -1,16 +1,17 @@
 import * as React from "react";
-import { Theme } from "../../types";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, { WithStyles } from "react-jss";
 import { emailRegex } from "../../constants";
 import { Field, Form } from "react-final-form";
-import { bindActionCreators, compose } from "redux";
+import { bindActionCreators, compose, Dispatch } from "redux";
 import { resetPassword, clearEmailState } from "../coreActions";
 import Input from "./Input";
 import { connect } from "react-redux";
 import Button from "./Button";
 import Underline from "./Underline";
+import { Theme } from "../../ThemeInjector";
+import { ReduxState } from "../../../reducers";
 
-const styles = (theme: Theme): object => ({
+const styles = (theme: Theme) => ({
   ResetPasswordPage: {
     display: "flex",
     flexDirection: "column",
@@ -32,22 +33,21 @@ const styles = (theme: Theme): object => ({
   }
 });
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   resetPassword: (s: string) => any;
   passwordEmailSent: boolean;
   clearEmailState: () => any;
   isSubmitting: boolean;
 }
 
-const ResetPasswordPage: React.SFC<Props> = ({
+const ResetPasswordPage: React.FunctionComponent<Props> = ({
   classes,
   resetPassword,
   passwordEmailSent,
   clearEmailState,
   isSubmitting
 }) => {
-  const handleSubmit = (values: object) => {
+  const handleSubmit = (values: any) => {
     resetPassword(values.email);
   };
 
@@ -66,7 +66,7 @@ const ResetPasswordPage: React.SFC<Props> = ({
           return errors;
         }}
         render={({ handleSubmit, invalid }) => (
-          <form className={classes.form} onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Field name="email">
               {({ input, meta }) => (
                 <Input
@@ -93,10 +93,10 @@ const ResetPasswordPage: React.SFC<Props> = ({
   );
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ resetPassword, clearEmailState }, dispatch);
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ReduxState) => ({
   passwordEmailSent: state.core.passwordEmailSent,
   isSubmitting: state.core.resetPasswordForm.isSubmitting
 });

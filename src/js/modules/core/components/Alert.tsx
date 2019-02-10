@@ -1,36 +1,29 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 import { States } from "./AnimatedAlert";
 import { ALERT_TIME_INTERVALS } from "../../constants";
+import { Theme } from "../../ThemeInjector";
 
-interface AlertStyles<T> extends Styles {
-  Alert: T;
-  text: T;
-}
-
-interface Props {
-  classes: AlertStyles<string>;
+interface Props extends WithStyles<typeof styles> {
   componentState: States;
   isError: boolean;
   message: string;
 }
 
-const styles = (theme: Theme): AlertStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   Alert: {
     color: theme.errorText,
     width: "300px",
     margin: "20px",
     fontSize: "1.1em",
     borderRadius: "15px",
-    border: props =>
+    border: (props: Props) =>
       props.isError
         ? `2px solid ${theme.errorBorder}`
         : `2px solid ${theme.notificationBorder}`,
-    backgroundColor: props =>
+    backgroundColor: (props: Props) =>
       props.isError ? theme.errorBackground : theme.notificationBackground,
-    transform: props =>
+    transform: (props: Props) =>
       props.componentState !== States.Mounted ? "translateX(-40vw)" : "none",
     transition: `transform ${ALERT_TIME_INTERVALS.ANIMATION_TIME}ms`,
     display: "flex",
@@ -42,7 +35,7 @@ const styles = (theme: Theme): AlertStyles<JssRules> => ({
   }
 });
 
-const Alert: React.SFC<Props> = ({ classes, message }) => {
+const Alert: React.FunctionComponent<Props> = ({ classes, message }) => {
   return (
     <div className={classes.Alert}>
       <div className={classes.text}> {message} </div>

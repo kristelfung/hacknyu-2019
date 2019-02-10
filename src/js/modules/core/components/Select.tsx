@@ -1,10 +1,10 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 import { ReactNodeLike } from "prop-types";
+import { Theme } from "../../ThemeInjector";
+import { FieldRenderProps } from "react-final-form";
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   meta: Partial<{
     // Idk why, but react-final-form doesn't export this as a type
     active: boolean;
@@ -31,16 +31,7 @@ interface Props {
   children: ReactNodeLike;
 }
 
-interface SelectStyles<T> extends Styles {
-  label: T;
-  error: T;
-  textField: T;
-  Select: T;
-  inputArea: T;
-  [p:string]: T;
-}
-
-const styles = (theme: Theme): SelectStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   label: {
     padding: "5px",
     width: "175px",
@@ -98,7 +89,14 @@ const styles = (theme: Theme): SelectStyles<JssRules> => ({
   }
 });
 
-const Select: React.SFC<Props> = ({ children, classes, meta, input, label, ...props }) => {
+const Select: React.FunctionComponent<Props & FieldRenderProps> = ({
+  children,
+  classes,
+  meta,
+  input,
+  label,
+  ...props
+}) => {
   return (
     <div className={classes.Select}>
       <div className={classes.inputArea}>

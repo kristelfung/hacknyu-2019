@@ -1,26 +1,17 @@
 import * as React from "react";
 import { ReactNode, ReactNodeArray } from "react";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
+import { Theme } from "../../ThemeInjector";
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
+  key: number;
   id: number;
-  classes: { [s: string]: string };
   icons: ReactNodeArray;
   name: string;
   children: ReactNode;
 }
 
-interface TrackStyles<T> extends Styles {
-  Track: T;
-  subwayIcons: T;
-  name: T;
-  description: T;
-  [s: string]: T;
-}
-
-const styles = (theme: Theme): TrackStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   Track: {
     display: "flex",
     flexDirection: "column",
@@ -45,7 +36,7 @@ const styles = (theme: Theme): TrackStyles<JssRules> => ({
   }
 });
 
-const Track: React.SFC<Props> = ({ id, classes, icons, children, name }) => {
+const Track: React.FunctionComponent<Props> = ({ id, classes, icons, children, name }) => {
   return (
     <div className={classes.Track}>
       <div className={classes.subwayIcons}>{icons}</div>

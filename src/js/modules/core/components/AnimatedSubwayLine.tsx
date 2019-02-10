@@ -15,7 +15,7 @@ interface Props {
 }
 
 class AnimatedSubwayLine extends React.Component<Props, State> {
-  isMounted: boolean;
+  private _isMounted: boolean;
 
   constructor(props: Props) {
     super(props);
@@ -25,7 +25,7 @@ class AnimatedSubwayLine extends React.Component<Props, State> {
     }
     const lineOffset = getRandomInteger(5) + 3;
     stopOffsets.push(lineOffset + 5);
-    this.isMounted = true;
+    this._isMounted = true;
     this.state = {
       lineStep: 0,
       currentStop: 0,
@@ -39,11 +39,11 @@ class AnimatedSubwayLine extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.isMounted = false;
+    this._isMounted = false;
   }
 
   async animate() {
-    while (this.isMounted) {
+    while (this._isMounted) {
       while (this.state.lineStep < STOPS_COUNT) {
         await delay(500 + getRandomInteger(1000));
         this.setState({ lineStep: this.state.lineStep + 1 });

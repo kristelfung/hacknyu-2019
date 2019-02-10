@@ -1,23 +1,15 @@
 import * as React from "react";
 import { User } from "firebase";
-import { Styles } from "react-jss";
+import injectSheet, { WithStyles } from "react-jss";
 import Avatar from "./Avatar";
-import injectSheet from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
 import { Link } from "react-router-dom";
+import { Theme } from "../../ThemeInjector";
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   user: User;
 }
 
-interface UserInfoStyles<T> extends Styles {
-  UserInfo: T;
-  greeting: T;
-  [s: string]: T;
-}
-
-const styles = (theme: Theme): UserInfoStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   UserInfo: {
     backgroundColor: theme.highlightColor,
     display: "flex",
@@ -45,7 +37,7 @@ const styles = (theme: Theme): UserInfoStyles<JssRules> => ({
   }
 });
 
-const UserInfo: React.SFC<Props> = ({ classes, user }) => {
+const UserInfo: React.FunctionComponent<Props> = ({ classes, user }) => {
   const greeting = user.displayName
     ? `Welcome ${user.displayName}!`
     : "Welcome!";

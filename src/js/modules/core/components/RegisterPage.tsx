@@ -1,32 +1,22 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 import { Field, Form } from "react-final-form";
 import Button from "./Button";
 import { connect } from "react-redux";
-import { bindActionCreators, compose } from "redux";
+import { bindActionCreators, compose, Dispatch } from "redux";
 import { emailRegex } from "../../constants";
-// @ts-ignore
 import { register } from "../coreActions";
 import Input from "./Input";
 import { Link } from "react-router-dom";
 import Underline from "./Underline";
+import { Theme } from "../../ThemeInjector";
+import { ReduxState } from "../../../reducers";
 
-interface RegisterPageStyles<T> extends Styles {
-  RegisterPage: T;
-  loginLink: T;
-  form: T;
-  [s: string]: T;
-};
-
-const styles = (theme: Theme): RegisterPageStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   RegisterPage: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    height: "100%",
-    width: "100%",
-    maxWidth: theme.containerSmallWidth,
     color: theme.secondFont,
     backgroundColor: theme.formBackground,
     paddingTop: "3em",
@@ -42,16 +32,11 @@ const styles = (theme: Theme): RegisterPageStyles<JssRules> => ({
     flexDirection: "column",
     padding: "20px",
     alignItems: "center"
-  },
-  [`@media(max-width: ${theme.smallBreakpoint})`]: {
-    RegisterPage: {
-      maxWidth: theme.containerMobileWidth
-    }
   }
 });
 
-interface Props {
-  classes: { [s: string]: string };
+
+interface Props extends WithStyles<typeof styles> {
   register: ({ email, password }: FormValues) => any;
   isSubmitting: boolean;
 }
@@ -62,7 +47,8 @@ interface FormValues {
   passwordConfirmation?: string;
 }
 
-const RegisterPage: React.SFC<Props> = ({
+
+const RegisterPage: React.FunctionComponent<Props> = ({
   classes,
   register,
   isSubmitting
@@ -166,11 +152,11 @@ const RegisterPage: React.SFC<Props> = ({
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ReduxState) => ({
   isSubmitting: state.core.registerForm.isSubmitting
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ register }, dispatch);
 
 

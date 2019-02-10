@@ -4,7 +4,7 @@ interface Props {
   width: number;
 }
 
-const Logo: React.SFC<Props> = props => (
+const Logo: React.FunctionComponent<Props> = props => (
   <svg id="Layer_1" data-name="Layer 1" viewBox="0 0 426 539" {...props}>
     <defs />
     <title>Logo-White-Borderless</title>

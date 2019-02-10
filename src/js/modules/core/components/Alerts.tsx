@@ -1,36 +1,33 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import injectSheet from "react-jss/lib/injectSheet";
-import { Errors, JssRules } from "../../types";
-import { bindActionCreators, compose } from "redux";
+import injectSheet, { WithStyles } from "react-jss";
+import { bindActionCreators, compose, Dispatch } from "redux";
 import { connect } from "react-redux";
 import AnimatedAlert from "./AnimatedAlert";
 import { clearError, clearNotification } from "../coreActions"
+import { Errors, Notifications } from "../coreReducer";
+import { ReduxState } from "../../../reducers";
 
-interface AlertsStyles<T> extends Styles {
-  Alerts: T;
-}
 
-interface Props {
+interface Props extends WithStyles<typeof styles> {
   errors: Errors;
-  classes: AlertsStyles<string>;
+  notifications: Notifications;
   clearError: (type: string) => any;
   clearNotification: (type: string) => any;
 }
 
-const styles: AlertsStyles<JssRules> = {
+const styles = {
   Alerts: {
     zIndex: "100",
     position: "fixed",
-    top: "2vh",
+    top: "6vh",
     left: "2vw"
   }
 };
 
-const Alerts: React.SFC<Props> = ({ clearError, clearNotification, notifications, errors, classes }) => {
+const Alerts: React.FunctionComponent<Props> = ({ clearError, clearNotification, notifications, errors, classes }) => {
   return (
     <div className={classes.Alerts}>
-      {Object.entries(errors).map(([type, message], index) => (
+      {Object.entries(errors).map(([type, message]: string[], index: number) => (
         <AnimatedAlert
           isError={true}
           type={type}
@@ -39,7 +36,7 @@ const Alerts: React.SFC<Props> = ({ clearError, clearNotification, notifications
           key={index}
         />
       ))}
-      {Object.entries(notifications).map(([type, message], index) => (
+      {Object.entries(notifications).map(([type, message]: string[], index: number) => (
         <AnimatedAlert
           isError={false}
           type={type}
@@ -52,12 +49,12 @@ const Alerts: React.SFC<Props> = ({ clearError, clearNotification, notifications
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ReduxState) => ({
   errors: state.core.errors,
   notifications: state.core.notifications
 });
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ clearError, clearNotification }, dispatch);
 
 

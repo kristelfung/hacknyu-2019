@@ -1,9 +1,8 @@
 import * as React from "react";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
-import { JssRules, Theme } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
+import { Theme } from "../../ThemeInjector";
 
-interface Props {
-  classes: { [s: string]: string };
+interface Props extends WithStyles<typeof styles> {
   meta: Partial<{
     // Idk why, but react-final-form doesn't export this as a type
     active: boolean;
@@ -30,16 +29,7 @@ interface Props {
   [p: string]: any;
 }
 
-interface InputStyles<T> extends Styles {
-  label: T;
-  error: T;
-  textField: T;
-  Input: T;
-  inputArea: T;
-  [s: string]: T;
-}
-
-const styles = (theme: Theme): InputStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   label: {
     padding: "5px",
     width: "150px",
@@ -69,11 +59,6 @@ const styles = (theme: Theme): InputStyles<JssRules> => ({
   inputArea: {
     display: "flex"
   },
-  [`@media(max-width: ${theme.largeBreakpoint})`]: {
-    Input: {
-      width: "12em"
-    }
-  },
   [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     Input: {
       width: "10em"
@@ -84,7 +69,7 @@ const styles = (theme: Theme): InputStyles<JssRules> => ({
   },
 });
 
-const Input: React.SFC<Props> = ({ component, classes, meta, input, label, ...props }) => {
+const Input: React.FunctionComponent<Props> = ({ component, classes, meta, input, label, ...props }) => {
   return (
     <div className={classes.Input}>
       <div className={classes.inputArea}>

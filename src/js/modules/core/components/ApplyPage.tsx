@@ -1,11 +1,9 @@
 import * as React from "react";
-import { JssRules, ReduxState, Theme } from "../../types";
-import injectSheet, { Styles } from "react-jss/lib/injectSheet";
+import { ApplyFormData, IncompleteField } from "../../types";
+import injectSheet, { WithStyles } from "react-jss";
 import { push } from "connected-react-router";
 import { submitApp } from "../coreActions";
 import { Form, Field, FormSpy } from "react-final-form";
-import { bindActionCreators, compose } from "redux";
-import { connect } from "react-redux";
 import { User } from "firebase";
 import { schools } from "../schools";
 import SchoolInput from "./SchoolInput";
@@ -15,79 +13,11 @@ import Checkbox from "./Checkbox";
 import Input from "./Input";
 import Select from "./Select";
 import UploadResumeButton from "./UploadResumeButton";
-
-interface Props {
-  classes: ApplyPageStyles<string>;
-  user: User;
-  push: (route: string) => any;
-  formData: FormData;
-  submitTimestamp: string;
-  submitApp: (values: FormData, incompleteFields: string[]) => any;
-}
-
-interface ApplyPageStyles<T> extends Styles {
-  ApplyPage: T;
-  header: T;
-  form: T;
-  inputs: T;
-  inputLabel: T;
-  submit: T;
-  checkbox: T;
-  loadingText: T;
-  autocompleteItem: T;
-  mlhPolicy: T;
-  multipleCheckboxes: T;
-  genderOptions: T;
-  termsAndConditions: T;
-  [`@media(max-width: ${theme.mediumBreakpoint})`]: T;
-}
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  gender: string;
-  // race / ethnicity
-  isAmericanNative: boolean;
-  isAsianPacificIslander: boolean;
-  isBlackAfricanAmerican: boolean;
-  isHispanic: boolean;
-  isWhiteCaucasian: boolean;
-  isOther: boolean;
-  phoneNumber: string;
-  school: string;
-  nyuSchool?: string;
-  nyuSchoolOther?: string;
-  yearOfStudy: string;
-  major: string;
-  gradYear: string;
-  isFirstTime: string;
-  hearAbout: string;
-  timesParticipated: string;
-  track: string;
-  tshirtSize: string;
-
-  isVeggie: boolean;
-  isVegan: boolean;
-  isKosher: boolean;
-  isHalal: boolean;
-  isGlutenFree: boolean;
-
-  otherDietaryRestrictions: string;
-  allergies: string;
-  codeOfConduct: boolean;
-  privacyPolicy: boolean;
-  resumeTimestamp: string; // timestamp
-
-  emergencyContactNumber: string;
-  emergencyContactName: string;
-  emergencyContactRelation: string;
-}
-
-interface ApplyPageState {
-  formData: FormData | null;
-  isLoading: boolean;
-}
+import { Theme } from "../../ThemeInjector";
+import { ReduxState } from "../../../reducers";
+import { connect } from "react-redux";
+import { bindActionCreators, compose } from "redux";
+import { Link } from "react-router-dom";
 
 const requiredFields = {
   firstName: "First Name",
@@ -102,7 +32,6 @@ const requiredFields = {
   isFirstTime: "First time participating",
   track: "Preferred Track",
   tshirtSize: "T-shirt size",
-  gender: "Gender",
   codeOfConduct: "Code of Conduct",
   privacyPolicy: "Private Policy",
   emergencyContactName: "Emergency contact name",
@@ -110,10 +39,21 @@ const requiredFields = {
   emergencyContactRelation: "Relation to emergency contact"
 };
 
-const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
+  admittedAlert: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    maxWidth: "90vw",
+    color: theme.secondFont,
+    backgroundColor: theme.formBackground,
+    borderRadius: "0.5em",
+    fontSize: "1.2rem",
+    padding: "2em"
+  },
   ApplyPage: {
     display: "flex",
-    width: "100%",
+    width: "90vw",
     maxWidth: theme.containerMaxWidth,
     flexDirection: "column",
     alignItems: "center",
@@ -146,6 +86,11 @@ const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
     maxWidth: "300px",
     lineHeight: "1.8rem"
   },
+  resumeUpload: {
+    maxWidth: "500px",
+    padding: "20px",
+    lineHeight: "1.8rem"
+  },
   submit: {
     width: "fit-content",
     padding: "13px",
@@ -170,42 +115,68 @@ const styles = (theme: Theme): ApplyPageStyles<JssRules> => ({
   genderOptions: {
     padding: "40px"
   },
+  warning: {
+    maxWidth: "400px",
+    color: "red"
+  },
   termsAndConditions: {
     padding: "15px"
   },
   [`@media(max-width: ${theme.largeBreakpoint})`]: {
     ApplyPage: {
-      width: theme.containerLargeWidth
+      maxWidth: theme.containerLargeWidth
     }
   },
   [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     ApplyPage: {
-      width: theme.containerMediumWidth
+      maxWidth: theme.containerMediumWidth
     }
   },
   [`@media(max-width: ${theme.smallBreakpoint})`]: {
-    ApplyPage: {
-      width: theme.containerMobileWidth
-    },
     multipleCheckboxes: {
-      width: "10em"
+      minInlineSize: "unset",
+      width: "50vw"
     },
     inputs: {
       alignItems: "center"
     }
-  },
+  }
 });
 
-interface IncompleteField {
-  field: string;
-  name: string;
+interface Props extends WithStyles<typeof styles> {
+  isAdmitted: boolean;
+  user: User;
+  push: (route: string) => any;
+  isSubmitting: boolean;
+  formData: ApplyFormData;
+  submitTimestamp: string;
+  submitApp: (
+    values: ApplyFormData,
+    incompleteFields: IncompleteField[]
+  ) => any;
 }
 
-class ApplyPage extends React.Component<Props, ApplyPageState> {
+const ApplyPage: React.FunctionComponent<Props> = ({
+  classes,
+  isAdmitted,
+  isSubmitting,
+  user,
+  formData,
+  submitApp,
+  submitTimestamp
+}) => {
+  if (isAdmitted) {
+    return (
+      <div className={classes.admittedAlert}>
+        You've already been accepted! Please{" "}
+        <Link to="/status"> confirm your attendance! </Link>
+      </div>
+    );
+  }
   // Checks if values are all filled and puts an empty string if they aren't
   // (so firebase doesn't complain)
-  getIncompleteFields = (values: any): IncompleteField[] => {
-    let incompleteFields = [];
+  const getIncompleteFields = (values: any): IncompleteField[] => {
+    let incompleteFields: IncompleteField[] = [];
     Object.entries(requiredFields).forEach(([field, name]) => {
       if (
         !(field in values) ||
@@ -220,393 +191,373 @@ class ApplyPage extends React.Component<Props, ApplyPageState> {
     return incompleteFields;
   };
 
-  handleSave = (values, incompleteFields) => {
-    this.props.submitApp(values, incompleteFields);
+  const handleSave = (
+    values: ApplyFormData,
+    incompleteFields: IncompleteField[]
+  ) => {
+    submitApp(values, incompleteFields);
   };
 
-  handleSubmit = values => {
-    this.props.submitApp(values, []);
+  const handleSubmit = (values: ApplyFormData) => {
+    submitApp(values, []);
   };
 
-  validateForm = (values: FormData): object => {
-    const incomplete = this.getIncompleteFields(values);
-    let errors = {};
-    incomplete.map(({ field }) => {
+  const validateForm = (values: ApplyFormData): object => {
+    const incomplete = getIncompleteFields(values);
+    let errors: { [s: string]: string } = {};
+    incomplete.map(({ field }: { field: string }) => {
       errors[field] = `Field cannot be empty`;
     });
+    if (values.phoneNumber === values.emergencyContactNumber) {
+      errors.emergencyContactNumber =
+        "Emergency contact number cannot be your phone number!";
+    }
     return errors;
   };
 
-  render() {
-    let { classes, isSubmitting, user, formData, submitTimestamp } = this.props;
-    return (
-      <div className={classes.ApplyPage}>
-        <h1 className={classes.header}> Apply </h1>
-        <Form
-          onSubmit={this.handleSubmit}
-          validate={this.validateForm}
-          initialValues={formData}
-          render={({ handleSubmit, pristine, invalid }) => (
-            <div className={classes.form}>
-              <form onSubmit={handleSubmit}>
-                <div className={classes.inputs}>
+  return (
+    <div className={classes.ApplyPage}>
+      <div className={classes.warning}>
+        We're running out of space, so we cannot guarantee any acceptances.
+        However, feel free to still apply!
+      </div>
+      <h1 className={classes.header}> Apply </h1>
+      <Form
+        onSubmit={handleSubmit}
+        validate={validateForm}
+        initialValues={formData}
+        render={({ handleSubmit, pristine, invalid }) => (
+          <div className={classes.form}>
+            <form onSubmit={handleSubmit}>
+              <div className={classes.inputs}>
+                <Field
+                  name="firstName"
+                  label="First Name:"
+                  render={props => <Input {...props} />}
+                  placeholder="Rose"
+                />
+                <Field
+                  name="lastName"
+                  label="Last Name:"
+                  render={props => <Input {...props} />}
+                  placeholder="Kolodny"
+                />
+                <Field
+                  id="date"
+                  name="birthDate"
+                  label="Date Of Birth:"
+                  type="date"
+                  render={props => <Input {...props} />}
+                />
+                <Field
+                  name="gender"
+                  label="Gender:"
+                  render={props => <Select {...props} />}
+                >
+                  <option value=""> Select an option </option>
+                  <option value="male"> Male </option>
+                  <option value="female"> Female </option>
+                  <option value="non-binary"> Non-binary </option>
+                  <option value="prefer-not"> Prefer not to say </option>
+                  <option value="other"> Other </option>
+                </Field>
+                <fieldset className={classes.multipleCheckboxes}>
+                  <legend className={classes.inputLabel}>
+                    (Optional) What races/ethnicities do you most closely
+                    identify with? Check all that apply.
+                  </legend>
+                  <Checkbox name="isAmericanNative">
+                    American Indian / Alaskan Native
+                  </Checkbox>
+                  <Checkbox name="isAsianPacificIslander">
+                    Asian / Pacific Islander
+                  </Checkbox>
+                  <Checkbox name="isBlackAfricanAmerican">
+                    Black / African American
+                  </Checkbox>
+                  <Checkbox name="isHispanic">Hispanic</Checkbox>
+                  <Checkbox name="isWhiteCaucasian">White / Caucasian</Checkbox>
+                  <Checkbox name="isOther">Other</Checkbox>
+                </fieldset>
+                <Field
+                  name="phoneNumber"
+                  label="Phone Number:"
+                  render={props => <Input {...props} />}
+                  type="tel"
+                  placeholder="1-800-867-5309"
+                />
+                <UploadResumeButton
+                  uid={user.uid}
+                  label="Upload Resume as PDF:"
+                />
+                <Field
+                  name="school"
+                  render={props => (
+                    <SchoolInput schools={schools} {...props} label="School:" />
+                  )}
+                  classes={classes}
+                />
+
+                <Condition when="school" is="New York University">
                   <Field
-                    name="firstName"
-                    label="First Name:"
-                    component={Input}
-                    placeholder="Rose"
-                  />
-                  <Field
-                    name="lastName"
-                    label="Last Name:"
-                    component={Input}
-                    placeholder="Kolodny"
-                  />
-                  <Field
-                    id="date"
-                    name="birthDate"
-                    label="Date Of Birth:"
-                    type="date"
-                    component={Input}
-                  />
-                  <Field
-                    name="gender"
-                    label="Gender:"
-                    component={Select}
+                    label="NYU School:"
+                    name="nyuSchool"
+                    render={props => <Select {...props} />}
                   >
-                    <option value=""> Select an option </option>
-                    <option value="male"> Male </option>
-                    <option value="female"> Female </option>
-                    <option value="non-binary"> Non-binary </option>
-                    <option value="prefer-not"> Prefer not to say </option>
-                    <option value="other"> Other </option>
+                    <option value="">Select an option</option>
+                    <option value="tandon">Tandon School of Engineering</option>
+                    <option value="cas">College of Arts and Science</option>
+                    <option value="gsas">
+                      Graduate School of Arts and Science
+                    </option>
+                    <option value="stern">
+                      Leonard N. Stern School of Business
+                    </option>
+                    <option value="nursing">
+                      Rory Meyers College of Nursing
+                    </option>
+                    <option value="steinhardt">
+                      Steinhardt School of Culture, Education, and Human
+                      Development
+                    </option>
+                    <option value="tisch">Tisch School of the Arts</option>
+                    <option value="dentistry">College of Dentistry</option>
+                    <option value="sps">School of Professional Studies</option>
+                    <option value="silver">Silver School of Social Work</option>
+                    <option value="ls"> Liberal Studies </option>
+                    <option value="gallatin">
+                      Gallatin School of Individualized Study
+                    </option>
+                    <option value="global-health">
+                      College of Global Public Health
+                    </option>
+                    <option value="abu-dhabi"> Abu Dhabi </option>
+                    <option value="shanghai"> Shanghai </option>
+                    <option value="other">Other (please specify):</option>
                   </Field>
-                  <fieldset className={classes.multipleCheckboxes}>
-                    <legend className={classes.inputLabel}>
-                      (Optional) What races/ethnicities do you most closely
-                      identify with? Check all that apply.
-                    </legend>
-                    <Checkbox name="isAmericanNative">
-                      American Indian / Alaskan Native
-                    </Checkbox>
-                    <Checkbox name="isAsianPacificIslander">
-                      Asian / Pacific Islander
-                    </Checkbox>
-                    <Checkbox name="isBlackAfricanAmerican">
-                      Black / African American
-                    </Checkbox>
-                    <Checkbox name="isHispanic">Hispanic</Checkbox>
-                    <Checkbox name="isWhiteCaucasian">
-                      White / Caucasian
-                    </Checkbox>
-                    <Checkbox name="isOther">Other</Checkbox>
-                  </fieldset>
+                </Condition>
+                <Condition when="nyuSchool" is="other">
+                  <label>
+                    <Field name="nyuSchoolOther" component="input" />
+                  </label>
+                </Condition>
+                <Field
+                  label="Current year of study:"
+                  name="yearOfStudy"
+                  render={props => <Select {...props} />}
+                >
+                  <option value=""> Select an option </option>
+                  <option value="high-school">High School </option>
+                  <option value="freshman">First-year (Freshman)</option>
+                  <option value="sophomore"> Sophomore </option>
+                  <option value="junior"> Junior </option>
+                  <option value="senior"> Senior </option>
+                  <option value="graduate">
+                    Graduate Student (Masters or Doctorate)
+                  </option>
+                  <option value="post-grad">
+                    {" "}
+                    Post Graduate (must be within 12 months of graduation to be
+                    eligible)
+                  </option>
+                </Field>
+                <Field
+                  label="Major:"
+                  name="major"
+                  render={props => <Input {...props} />}
+                />
+
+                <Field
+                  label="Anticipated graduation year:"
+                  name="gradYear"
+                  render={props => <Select {...props} />}
+                >
+                  <option value=""> Select an option </option>
+                  <option value="2019"> 2019 </option>
+                  <option value="2020"> 2020 </option>
+                  <option value="2021"> 2021 </option>
+                  <option value="2022"> 2022 </option>
+                  <option value="2023"> 2023 </option>
+
+                  <option value="2024-plus"> 2024 or later </option>
+                </Field>
+
+                <Field
+                  label="Is this your first time at HackNYU?"
+                  name="isFirstTime"
+                  render={props => <Select {...props} />}
+                >
+                  <option value=""> Select an option </option>
+                  <option value="yes"> Yes </option>
+                  <option value="no"> No </option>
+                </Field>
+                <Condition when="isFirstTime" is="no">
+                  <label>
+                    <Field
+                      name="timesParticipated"
+                      label="How many times have you participated at HackNYU so far?"
+                      render={props => <Select {...props} />}
+                    >
+                      <option value=""> Select an option </option>
+                      <option value="one"> 1 </option>
+                      <option value="two"> 2 </option>
+                      <option value="three"> 3 </option>
+                      <option value="four-plus"> 4 or more </option>
+                    </Field>
+                  </label>
+                </Condition>
+                <Field
+                  label="Which track are you currently most interested in hacking in? (You can change your track at the hackathon)"
+                  name="track"
+                  render={props => <Select {...props} />}
+                >
+                  <option value="">Select an option</option>
+                  <option value="education">Education</option>
+                  <option value="financial-empowerment">
+                    Financial Empowerment
+                  </option>
+                  <option value="health-well-being">
+                    Health and Well-Being
+                  </option>
+                  <option value="sustainability">Sustainability</option>
+                </Field>
+
+                <Field
+                  label="Unisex t-shirt size:"
+                  name="tshirtSize"
+                  render={props => <Select {...props} />}
+                >
+                  <option value=""> Select an option </option>
+                  <option value="x-small"> XS </option>
+                  <option value="small"> S </option>
+                  <option value="medium"> M </option>
+                  <option value="large"> L </option>
+                  <option value="x-large"> XL </option>
+                  <option value="xx-large"> XXL </option>
+                </Field>
+
+                <fieldset className={classes.multipleCheckboxes}>
+                  <legend className={classes.inputLabel}>
+                    Any dietary restrictions? Check all that apply.
+                  </legend>
+                  <Checkbox name="isVeggie">Vegetarian</Checkbox>
+                  <Checkbox name="isVegan">Vegan</Checkbox>
+                  <Checkbox name="isKosher">Kosher</Checkbox>
+                  <Checkbox name="isHalal">Halal</Checkbox>
+                  <Checkbox name="isGlutenFree">Gluten Free</Checkbox>
+                </fieldset>
+
+                <Field
+                  label="(Optional) Any other dietary restrictions or allergies?"
+                  name="otherDietaryRestrictions"
+                  render={props => <Input {...props} />}
+                />
+
+                <Field
+                  label="(Optional) Any allergies?"
+                  name="allergies"
+                  render={props => <Input {...props} />}
+                />
+
+                <fieldset className={classes.multipleCheckboxes}>
+                  <legend className={classes.inputLabel}>
+                    Emergency contact information
+                  </legend>
+
                   <Field
-                    name="phoneNumber"
-                    label="Phone Number:"
-                    className={classes.input}
-                    component={Input}
+                    label="Emergency contact number"
+                    name="emergencyContactNumber"
                     type="tel"
+                    render={props => <Input {...props} />}
                     placeholder="1-800-867-5309"
                   />
 
-                  <UploadResumeButton uid={user.uid} />
-
                   <Field
-                    name="school"
-                    label="School:"
-                    component={SchoolInput}
-                    schools={schools}
-                    classes={classes}
-                  />
-
-                  <Condition when="school" is="New York University">
-                    <Field
-                      label="NYU School:"
-                      name="nyuSchool"
-                      component={Select}
-                    >
-                      <option value="">Select an option</option>
-                      <option value="tandon">
-                        Tandon School of Engineering
-                      </option>
-                      <option value="cas">College of Arts and Science</option>
-                      <option value="gsas">
-                        Graduate School of Arts and Science
-                      </option>
-                      <option value="stern">
-                        Leonard N. Stern School of Business
-                      </option>
-                      <option value="nursing">
-                        Rory Meyers College of Nursing
-                      </option>
-                      <option value="steinhardt">
-                        Steinhardt School of Culture, Education, and Human
-                        Development
-                      </option>
-                      <option value="tisch">Tisch School of the Arts</option>
-                      <option value="dentistry">College of Dentistry</option>
-                      <option value="sps">
-                        School of Professional Studies
-                      </option>
-                      <option value="silver">
-                        Silver School of Social Work
-                      </option>
-                      <option value="ls"> Liberal Studies </option>
-                      <option value="gallatin">
-                        Gallatin School of Individualized Study
-                      </option>
-                      <option value="global-health">
-                        College of Global Public Health
-                      </option>
-                      <option value="abu-dhabi"> Abu Dhabi </option>
-                      <option value="shanghai"> Shanghai </option>
-                      <option value="other">Other (please specify):</option>
-                    </Field>
-                  </Condition>
-                  <Condition when="nyuSchool" is="other">
-                    <label>
-                      <Field
-                        name="nyuSchoolOther"
-                        component="input"
-                      />
-                    </label>
-                  </Condition>
-                  <Field
-                    label="Current year of study:"
-                    name="yearOfStudy"
-                    component={Select}
-                  >
-                    <option value=""> Select an option </option>
-                    <option value="high-school">High School </option>
-                    <option value="freshman">First-year (Freshman)</option>
-                    <option value="sophomore"> Sophomore </option>
-                    <option value="junior"> Junior </option>
-                    <option value="senior"> Senior </option>
-                    <option value="graduate">
-                      Graduate Student (Masters or Doctorate)
-                    </option>
-                    <option value="post-grad"> Post Graduate (must be within 12 months of graduation to be eligible)</option>
-                  </Field>
-                  <Field
-                    label="Major:"
-                    name="major"
-                    component={Input}
+                    label="Emergency contact full name"
+                    name="emergencyContactName"
+                    render={props => <Input {...props} />}
+                    placeholder="Andrew Davis"
                   />
 
                   <Field
-                    label="Graduation year:"
-                    name="gradYear"
-                    component={Select}
-                  >
-                    <option value=""> Select an option </option>
-                    <option value="2017-or-earlier"> 2017 or earlier </option>
-                    <option value="2018"> 2018 </option>
-                    <option value="2019"> 2019 </option>
-                    <option value="2020"> 2020 </option>
-                    <option value="2021"> 2021 </option>
-                    <option value="2022"> 2022 </option>
-                    <option value="2023"> 2023 </option>
-                    <option value="2024-plus"> 2024 or later </option>
-                  </Field>
-
-                  <Field
-                    label="Is this your first time at HackNYU?"
-                    name="isFirstTime"
-                    component={Select}
-                  >
-                    <option value=""> Select an option </option>
-                    <option value="yes"> Yes </option>
-                    <option value="no"> No </option>
-                  </Field>
-                  <Condition when="isFirstTime" is="no">
-                    <label>
-                      <Field
-                        name="timesParticipated"
-                        label="How many times have you participated at HackNYU so far?"
-                        component={Select}
-                      >
-                        <option value=""> Select an option </option>
-                        <option value="one"> 1 </option>
-                        <option value="two"> 2 </option>
-                        <option value="three"> 3 </option>
-                        <option value="four-plus"> 4 or more </option>
-                      </Field>
-                    </label>
-                  </Condition>
-                  <Field
-                    label="(Optional) How did you hear about HackNYU?"
-                    name="hearAbout"
-                    component={Select}
-                  >
-                    <option value=""> Select an option </option>
-                    <option value="social-media"> Social media (Facebook, Twitter, Instagram) </option>
-                    <option value="mlh"> Major League Hacking </option>
-                    <option value="sponsor"> One of our sponsors or partners </option>
-                    <option value="word-of-mouth"> Friends, professors, or co-workers </option>
-                    <option value="email"> Email </option>
-                    <option value="previous-participant"> I have attended HackNYU in the past </option>
-                  </Field>
-                  <Field
-                    label="Which track are you currently most interested in hacking in? (You can change your track at the hackathon)"
-                    name="track"
-                    component={Select}
-                  >
-                    <option value=""> 
-                    Select an option 
-                    </option>
-                    <option value="education">
-                    Education
-                    </option>
-                    <option value="financial-empowerment"> 
-                    Financial Empowerment 
-                    </option>
-                    <option value="health-well-being">
-                     Health and Well-Being
-                     </option>
-                    <option value="sustainability">
-                      Sustainability
-                    </option>
-                  </Field>
-
-                  <Field
-                    label="Unisex t-shirt size:"
-                    name="tshirtSize"
-                    component={Select}
-                  >
-                    <option value=""> Select an option </option>
-                    <option value="x-small"> XS </option>
-                    <option value="small"> S </option>
-                    <option value="medium"> M </option>
-                    <option value="large"> L </option>
-                    <option value="x-large"> XL </option>
-                    <option value="xx-large"> XXL </option>
-                  </Field>
-
-                  <fieldset className={classes.multipleCheckboxes}>
-                    <legend className={classes.inputLabel}>
-                      Any dietary restrictions? Check all that apply.
-                    </legend>
-                    <Checkbox name="isVeggie">Vegetarian</Checkbox>
-                    <Checkbox name="isVegan">Vegan</Checkbox>
-                    <Checkbox name="isKosher">Kosher</Checkbox>
-                    <Checkbox name="isHalal">Halal</Checkbox>
-                    <Checkbox name="isGlutenFree">Gluten Free</Checkbox>
-                  </fieldset>
-
-                  <Field
-                    label="(Optional) Any other dietary restrictions or allergies?"
-                    name="otherDietaryRestrictions"
-                    component={Input}
+                    label="Relation to emergency contact"
+                    name="emergencyContactRelation"
+                    render={props => <Input {...props} />}
+                    placeholder="mother, father, friend, etc..."
                   />
+                </fieldset>
 
+                <label className={classes.termsAndConditions}>
+                  <div className={classes.inputLabel}>
+                    I have read and agree to the{" "}
+                    <a href="https://mlh.io/code-of-conduct">
+                      MLH Code of Conduct.
+                    </a>
+                  </div>
                   <Field
-                    label="(Optional) Any allergies?"
-                    name="allergies"
-                    component={Input}
+                    className={classes.checkbox}
+                    name="codeOfConduct"
+                    component="input"
+                    type="checkbox"
                   />
-
-                  <fieldset className={classes.multipleCheckboxes}>
-                    <legend className={classes.inputLabel}>
-                      Emergency contact information
-                    </legend>
-
-                    <Field
-                      label="Emergency contact number"
-                      name="emergencyContactNumber"
-                      type="tel"
-                      component={Input}
-                      placeholder="1-800-867-5309"
-                    />
-
-                    <Field
-                      label="Emergency contact full name"
-                      name="emergencyContactName"
-                      component={Input}
-                      placeholder="Andrew Davis"
-                    />
-
-                    <Field
-                      label="Relation to emergency contact"
-                      name="emergencyContactRelation"
-                      component={Input}
-                      placeholder="mother, father, friend, etc..."
-                    />
-                  </fieldset>
-
-                  <label className={classes.termsAndConditions}>
-                    <div className={classes.inputLabel}>
-                      I have read and agree to the{" "}
-                      <a href="https://mlh.io/code-of-conduct">
-                        MLH Code of Conduct.
-                      </a>
-                    </div>
-                    <Field
-                      className={classes.checkbox}
-                      name="codeOfConduct"
-                      component="input"
-                      type="checkbox"
-                    />
-                  </label>
-                  <label className={classes.termsAndConditions}>
-                    <div className={classes.mlhPolicy}>
-                      I authorize HackNYU to share my application/registration
-                      information for event administration, pre- and post-event
-                      informational emails, and occasional messages about
-                      hackathons in-line with the MLH Privacy Policy. I further
-                      agree to the Contest Terms and Conditions and the MLH
-                      Privacy Policy.
-                    </div>
-                    <Field
-                      className={classes.checkbox}
-                      name="privacyPolicy"
-                      component="input"
-                      type="checkbox"
-                    />
-                  </label>
-                  <FormSpy
-                    render={({ form }) => {
-                      const fields = form.getState().values;
-                      const incompleteFields = this.getIncompleteFields(fields);
-                      if (!submitTimestamp && incompleteFields.length !== 0) {
-                        return (
-                          <Button
-                            className={classes.submit}
-                            onClick={() =>
-                              this.handleSave(fields, incompleteFields)
-                            }
-                            disabled={pristine || isSubmitting}
-                          >
-                            SAVE
-                          </Button>
-                        );
-                      } else {
-                        return (
-                          <Button
-                            className={classes.submit}
-                            type="submit"
-                            disabled={pristine || invalid || isSubmitting}
-                          >
-                            SUBMIT
-                          </Button>
-                        );
-                      }
-                    }}
+                </label>
+                <label className={classes.termsAndConditions}>
+                  <div className={classes.mlhPolicy}>
+                    I authorize HackNYU to share my application/registration
+                    information for event administration, pre- and post-event
+                    informational emails, and occasional messages about
+                    hackathons in-line with the MLH Privacy Policy. I further
+                    agree to the Contest Terms and Conditions and the MLH
+                    Privacy Policy.
+                  </div>
+                  <Field
+                    className={classes.checkbox}
+                    name="privacyPolicy"
+                    component="input"
+                    type="checkbox"
                   />
-                </div>
-              </form>
-            </div>
-          )}
-        />
-      </div>
-    );
-  }
-}
+                </label>
+                <FormSpy
+                  render={({ form }) => {
+                    const fields = form.getState().values as ApplyFormData;
+                    const incompleteFields = getIncompleteFields(fields);
+                    if (!submitTimestamp && incompleteFields.length !== 0) {
+                      return (
+                        <Button
+                          className={classes.submit}
+                          onClick={() => handleSave(fields, incompleteFields)}
+                          disabled={pristine || isSubmitting}
+                        >
+                          SAVE
+                        </Button>
+                      );
+                    } else {
+                      return (
+                        <Button
+                          className={classes.submit}
+                          type="submit"
+                          disabled={pristine || invalid || isSubmitting}
+                        >
+                          SUBMIT
+                        </Button>
+                      );
+                    }
+                  }}
+                />
+              </div>
+            </form>
+          </div>
+        )}
+      />
+    </div>
+  );
+};
 
 const mapStateToProps = (state: ReduxState) => ({
   user: state.core.user,
   formData: state.core.applyForm.formData,
   submitTimestamp: state.core.applyForm.submitTimestamp,
+  isAdmitted: state.core.isAdmitted,
   isSubmitting: state.core.applyForm.isSubmitting
 });
 

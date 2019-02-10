@@ -11,3 +11,4 @@ builds/**
 functions/.runtimeconfig.json
 functions/node_modules
 functions/lib/*.js
+functions/adminkey.json

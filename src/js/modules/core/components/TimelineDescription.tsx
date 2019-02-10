@@ -1,29 +1,22 @@
 import * as React from "react";
-import { Styles } from "react-jss";
-import { JssRules, Theme } from "../../types";
-import injectSheet from "react-jss/lib/injectSheet";
+import injectSheet, { WithStyles } from "react-jss";
 import { ReactNodeLike } from "prop-types";
+import { Theme } from "../../ThemeInjector";
 
-interface TimelineDescriptionStyles<T> extends Styles {
-  TimelineDescription: T;
-  [s: string]: T;
-}
-
-interface Props {
-  classes: TimelineDescriptionStyles<string>;
+interface Props extends WithStyles<typeof styles> {
   children: ReactNodeLike;
   left: string;
   top: string;
 }
-const styles = (theme: Theme): TimelineDescriptionStyles<JssRules> => ({
+const styles = (theme: Theme) => ({
   TimelineDescription: {
     position: "absolute",
     display: "flex",
     flexDirection: "column",
-    top: props => props.top,
+    top: (props: Props) => props.top,
     maxWidth: "150px",
     fontSize: "1.2em",
-    left: props => props.left
+    left: (props: Props) => props.left
   },
   [`@media(max-width: ${theme.mediumBreakpoint})`]: {
     TimelineDescription: {
@@ -33,13 +26,8 @@ const styles = (theme: Theme): TimelineDescriptionStyles<JssRules> => ({
   }
 });
 
-
-const TimelineDescription: React.SFC<Props> = ({ classes, children }) => {
-  return (
-    <div className={classes.TimelineDescription}>
-      {children}
-    </div>
-  )
-}
+const TimelineDescription: React.FunctionComponent<Props> = ({ classes, children }) => {
+  return <div className={classes.TimelineDescription}>{children}</div>;
+};
 
 export default injectSheet(styles)(TimelineDescription);
