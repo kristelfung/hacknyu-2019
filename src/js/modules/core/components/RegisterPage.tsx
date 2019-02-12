@@ -1,12 +1,12 @@
 import * as React from "react";
 import injectSheet, { WithStyles } from "react-jss";
 import { Field, Form } from "react-final-form";
-import Button from "./Button";
+import Button from "../../forms/components/Button";
 import { connect } from "react-redux";
 import { bindActionCreators, compose, Dispatch } from "redux";
 import { emailRegex } from "../../constants";
 import { register } from "../coreActions";
-import Input from "./Input";
+import Input from "../../forms/components/Input";
 import { Link } from "react-router-dom";
 import Underline from "./Underline";
 import { Theme } from "../../ThemeInjector";

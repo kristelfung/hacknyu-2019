@@ -1,7 +1,7 @@
 import * as React from "react";
 import injectSheet, { WithStyles } from "react-jss";
 import Underline from "../Underline";
-import Button from "../Button";
+import Button from "../../../forms/components/Button";
 import { ConfirmationFormData } from "../../../types";
 import { User } from "firebase";
 import { compose } from "redux";

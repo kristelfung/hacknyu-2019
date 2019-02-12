@@ -1,8 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as sgMail from "@sendgrid/mail";
-import renderAcceptanceEmail from "./AdmittedEmail";
 import renderReminderEmail from "./ReminderEmail";
+import renderAdmittedEmail from "./AdmittedEmail";
+import renderRejectedEmail from "./RejectedEmail";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -50,7 +51,7 @@ export const sendAcceptanceEmail = functions.firestore
       .then(user => {
         const apiKey = functions.config().sendgrid.key;
         sgMail.setApiKey(apiKey);
-        const html = renderAcceptanceEmail(user.displayName);
+        const html = renderAdmittedEmail(user.displayName);
         const msg = {
           to: user.email,
           from: "confirm@hacknyu.org",
@@ -178,4 +179,58 @@ const getAge = birthDate => {
   const ageDiffMs = Date.now() - birthDateTime;
   const ageDate = new Date(ageDiffMs);
   return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
+const reflect = p =>
+  p.then(v => ({ v, status: "resolved" }), e => ({ e, status: "rejected" }));
+
+export const getRejectedUsersData = () => {
+  const db = admin.firestore();
+  const auth = admin.auth();
+
+  const rejectedUsersData = {};
+  const admittedUsers = new Set();
+
+  return db
+    .collection("admitted")
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        admittedUsers.add(doc.id);
+      });
+      console.log("Admitted:");
+      console.log(admittedUsers.size);
+      return db.collection("users").get();
+    })
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (!admittedUsers.has(doc.id)) {
+          rejectedUsersData[doc.id] = data;
+        }
+      });
+      console.log("Rejected:");
+      console.log(Object.keys(rejectedUsersData).length);
+      return Promise.all(
+        Object.keys(rejectedUsersData)
+          .map(id => auth.getUser(id))
+          .map(reflect)
+      );
+    })
+    .then(results => {
+      const rejectedUsers = results
+        .filter(x => x.status === "resolved")
+        .map(x => x.v);
+
+      console.log("Rejected w/ users:");
+      console.log(rejectedUsers.length);
+
+      for (let user of rejectedUsers) {
+        rejectedUsersData[user.uid].email = user.email;
+      }
+      return rejectedUsersData;
+    })
+    .catch(function(error) {
+      console.log("Error with getting rejected users: ", error);
+    });
 };

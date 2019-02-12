@@ -1,20 +1,20 @@
 import * as React from "react";
 import { Form } from "react-final-form";
-import Button from "../Button";
-import UploadResumeButton from "../UploadResumeButton";
-import Checkbox from "../Checkbox";
-import Radio from "../Radio";
-import { ConfirmationFormData } from "../../../types";
-import { getIncompleteFields } from "../../../utils";
+import Button from "./Button";
+import UploadResumeButton from "./UploadResumeButton";
+import Checkbox from "./Checkbox";
+import Radio from "./Radio";
+import { ConfirmationFormData } from "../../types";
+import { getIncompleteFields } from "../../utils";
 import injectSheet, { WithStyles } from "react-jss";
 import { User } from "firebase";
-import { ReduxState } from "../../../../reducers";
+import { ReduxState } from "../../../reducers";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { submitConfirmation } from "../../coreActions";
-import { Theme } from "../../../ThemeInjector";
-import Condition from "../Condition";
-import { IS_CONFIRMATION_OPEN } from "../../../constants";
+import { submitConfirmation } from "../../core/coreActions";
+import { Theme } from "../../ThemeInjector";
+import Condition from "./Condition";
+import { IS_CONFIRMATION_OPEN } from "../../constants";
 
 
 const requiredFields = {

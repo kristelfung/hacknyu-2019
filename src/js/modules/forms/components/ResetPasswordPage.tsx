@@ -3,11 +3,11 @@ import injectSheet, { WithStyles } from "react-jss";
 import { emailRegex } from "../../constants";
 import { Field, Form } from "react-final-form";
 import { bindActionCreators, compose, Dispatch } from "redux";
-import { resetPassword, clearEmailState } from "../coreActions";
+import { resetPassword, clearEmailState } from "../../core/coreActions";
 import Input from "./Input";
 import { connect } from "react-redux";
 import Button from "./Button";
-import Underline from "./Underline";
+import Underline from "../../core/components/Underline";
 import { Theme } from "../../ThemeInjector";
 import { ReduxState } from "../../../reducers";
 
@@ -16,7 +16,7 @@ const styles = (theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    width: theme.containerSmallWidth,
+    width: theme.containerMediumWidth,
     backgroundColor: theme.formBackground,
     color: theme.secondFont,
     paddingTop: "3em",
@@ -30,7 +30,17 @@ const styles = (theme: Theme) => ({
   },
   button: {
     marginRight: "20px"
-  }
+  },
+  [`@media(max-width: ${theme.mediumBreakpoint})`]: {
+    ResetPasswordPage: {
+      width: theme.containerSmallWidth
+    }
+  },
+  [`@media(max-width: ${theme.mobileBreakpoint})`]: {
+    ResetPasswordPage: {
+      width: theme.containerMobileWidth
+    }
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {

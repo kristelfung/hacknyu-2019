@@ -2,6 +2,12 @@
 **/*.js
 **/*.js.map
 
+# Log files
+*.log
+
 # Typescript v1 declaration files
 typings/
-functions/adminkey.json
+
+# certs
+adminkey.json
+certs.json

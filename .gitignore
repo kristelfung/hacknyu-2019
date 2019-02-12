@@ -12,3 +12,4 @@ functions/.runtimeconfig.json
 functions/node_modules
 functions/lib/*.js
 functions/adminkey.json
+functions/certs.json

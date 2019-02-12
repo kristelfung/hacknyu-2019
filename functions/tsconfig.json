@@ -10,5 +10,5 @@
     "types": []
   },
   "compileOnSave": true,
-  "files": ["src/index.ts", "src/server.ts"]
+  "files": ["src/index.ts", "src/server.ts", "src/sendRejectionEmails.ts"]
 }

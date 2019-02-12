@@ -1,8 +1,8 @@
 import * as React from "react";
 import withStyles, { WithStyles } from "react-jss";
 import { Link } from "react-router-dom";
-import { Theme } from "./ThemeInjector";
-import AnimatedSubwayLines from "./core/components/AnimatedSubwayLines";
+import { Theme } from "../../ThemeInjector";
+import AnimatedSubwayLines from "./AnimatedSubwayLines";
 
 const styles = {
   NotFoundPage: {

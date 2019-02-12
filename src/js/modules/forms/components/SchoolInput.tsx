@@ -54,6 +54,7 @@ const menuStyle = {
   left: 0,
   position: "absolute" as "absolute",
   overflow: "auto",
+  maxHeight: "50vh",
   width: "100%",
   zIndex: 1000
 };

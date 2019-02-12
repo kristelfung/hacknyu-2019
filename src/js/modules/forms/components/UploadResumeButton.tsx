@@ -3,7 +3,7 @@ import Button from "./Button";
 import injectSheet, { WithStyles } from "react-jss";
 import { bindActionCreators, compose, Dispatch } from "redux";
 import { connect } from "react-redux";
-import { uploadResume } from "../coreActions";
+import { uploadResume } from "../../core/coreActions";
 import { Theme } from "../../ThemeInjector";
 import { ReduxState } from "../../../reducers";
 

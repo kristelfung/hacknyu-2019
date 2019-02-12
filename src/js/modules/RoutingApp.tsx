@@ -6,15 +6,15 @@ import HomePage from "./core/components/HomePage";
 import { ConnectedRouter } from "connected-react-router";
 import store from "../store";
 import ThemeInjector from "./ThemeInjector";
-import ApplyPage from "./core/components/ApplyPage";
-import LoginPage from "./core/components/LoginPage";
+import ApplyPage from "./forms/components/ApplyPage";
+import LoginPage from "./forms/components/LoginPage";
 import AboutPage from "./core/components/AboutPage";
 import RegisterPage from "./core/components/RegisterPage";
-import ResetPasswordPage from "./core/components/ResetPasswordPage";
+import ResetPasswordPage from "./forms/components/ResetPasswordPage";
 import ProfilePage from "./core/components/ProfilePage";
 import appHistory from "../appHistory";
 import AdmissionResultPage from "./core/components/Admission/AdmissionResultPage";
-import NotFoundPage from "./NotFoundPage";
+import NotFoundPage from "./core/components/NotFoundPage";
 import { IS_REGISTRATION_OPEN } from "./constants.ts";
 
 class RoutingApp extends React.Component {

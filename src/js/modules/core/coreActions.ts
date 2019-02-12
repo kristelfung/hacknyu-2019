@@ -223,12 +223,12 @@ export const submitApp = (
 
 export const declineConfirmation = () => {
   return submitConfirmation({
-    location: 'cannot-attend',
+    location: "cannot-attend",
     nyuCodeOfConduct: false,
     nyuPrivacyPolicy: false,
     nyuMediaRights: false
   });
-}
+};
 
 export const submitConfirmation = (formValues: ConfirmationFormData) => (
   dispatch: ThunkDispatch<ReduxState, undefined, any>
