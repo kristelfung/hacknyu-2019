@@ -17,8 +17,6 @@ import { Theme } from "../../ThemeInjector";
 import { ReduxState } from "../../../reducers";
 import { LoadingStates } from "../coreReducer";
 
-import Prizes from "./Prizes";
-
 interface Props extends WithStyles<typeof styles> {
   children: ReactNode;
   location: Location;
@@ -131,7 +129,6 @@ class MainApp extends React.Component<Props> {
     }
     return (
       <div className={classes.MainApp}>
-        <Prizes/>
         <Alerts />
         <Header />
         <a id="mlh-trust-badge"
